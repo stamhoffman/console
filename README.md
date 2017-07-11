@@ -1,3 +1,3 @@
 # console
 
-[Шпаргалка по разметке](https://github.com/sandino/Markdown-Cheatsheet/blob/master/README.md#headers)
+11.07.2017
