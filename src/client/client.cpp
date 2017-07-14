@@ -5,12 +5,26 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
 
 
 #define pointer_adrr const struct sockaddr
 
 int main(int argc, char **argv)
 {
+	if(argc < 2)
+	{
+		printf("Ошибка в формате команды, не введен адресс сервера\n");
+		printf("Используйте ключ -h для получения справки \n");
+		return -1;
+	}
+
+	const char helpstr[3] = {'-','h','\0'};
+
+  if(strncmp(argv[1], helpstr, 2) == 0)
+	{
+		printf("формат команды ./client xxx.xxx.xxx.xxx\n Например ./client 127.1.1.1\n");
+	}
 
 	int socket_descriptor;
 
@@ -27,7 +41,7 @@ int main(int argc, char **argv)
 	servaddr_options. sin_family = AF_INET;
 	servaddr_options. sin_port = htons(54321);
 
-	if(inet_pton(AF_INET, argv[1], &servaddr_options.sin_addr) <= 0)
+	if(inet_pton(AF_INET, argv[1], &servaddr_options.sin_addr) == -1)
 	{
 		printf("Error inet_pton():%s\n", strerror(errno));
 		return -1;

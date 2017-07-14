@@ -9,7 +9,7 @@
 #include <iostream>
 
 #define pointer_socket struct sockaddr
-void new_client_connect(void);
+void 		new_client_connect(void);
 
 int main(int argc, char **argv)
 {
@@ -31,8 +31,7 @@ int main(int argc, char **argv)
 	address_clienta.sin_port = htons(54321);
 	address_clienta.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	if((bind(socket_descriptor, (pointer_socket *)&address_clienta,
-  sizeof(address_clienta))) == -1)
+	if((bind(socket_descriptor, (pointer_socket *)&address_clienta, sizeof(address_clienta))) == -1)
 	{
 		printf("Error bind():%s\n", strerror(errno));
 		return -1;
@@ -50,13 +49,12 @@ int main(int argc, char **argv)
 
 	while(1)
 	{
-		if((socket_accept = accept(socket_descriptor, (pointer_socket *)
-		&address_accept, &len)) == -1)
+		if((socket_accept = accept(socket_descriptor, (pointer_socket *)&address_accept, &len)) == -1)
 		{
 			printf("Errorr accept():%s\n",strerror(errno));
 		}
-		if((res = inet_ntop(AF_INET, (pointer_socket *)&address_accept,
-		addr_clients, sizeof(addr_clients))) == NULL)
+		if((res = inet_ntop(AF_INET, (pointer_socket *)&address_accept,	addr_clients,
+		sizeof(addr_clients))) == NULL)
 		{
 			printf("Error inet_ntop():%s\n",strerror(errno));
 		}
