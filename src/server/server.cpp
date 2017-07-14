@@ -5,10 +5,11 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-
-
+#include <thread>
+#include <iostream>
 
 #define pointer_socket struct sockaddr
+void new_client_connect(void);
 
 int main(int argc, char **argv)
 {
@@ -37,36 +38,48 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
+	len = sizeof(socket_accept);
+	char addr_clients[INET_ADDRSTRLEN];
+	const char *res;
+	len = sizeof(socket_accept);
+
 	if((listen(socket_descriptor, 3)) == -1)
 	{
 		printf("Error listen()%s\n",strerror(errno));
 	}
 
-	len = sizeof(socket_accept);
-	char addr_clients[INET_ADDRSTRLEN];
-	const char *res;
-
-
 	while(1)
 	{
-		len = sizeof(socket_accept);
-
 		if((socket_accept = accept(socket_descriptor, (pointer_socket *)
-    &address_accept, &len)) == -1)
+		&address_accept, &len)) == -1)
 		{
 			printf("Errorr accept():%s\n",strerror(errno));
 		}
-
 		if((res = inet_ntop(AF_INET, (pointer_socket *)&address_accept,
-    addr_clients, sizeof(addr_clients))) == NULL)
+		addr_clients, sizeof(addr_clients))) == NULL)
 		{
 			printf("Error inet_ntop():%s\n",strerror(errno));
 		}
-    else printf("connection from: %s\n", addr_clients);
+		else printf("connection from: %s\n", addr_clients);
 
-	}
+
+		std::thread new_client_connect();
+		std::thread detach;
+
+		}
 
 	close(socket_descriptor);
 	close(socket_accept);
 	return 0;
+}
+
+
+
+void new_client_connect(void)
+{
+while(1)
+{
+	std::cout << "/* message */" << '\n';
+}
+
 }

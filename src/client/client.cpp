@@ -7,9 +7,7 @@
 #include <unistd.h>
 
 
-
 #define pointer_adrr const struct sockaddr
-#define print_info
 
 int main(int argc, char **argv)
 {
@@ -21,13 +19,6 @@ int main(int argc, char **argv)
 		printf("Error socket():%s\n", strerror(errno));
 		return -1;
 	}
-		else
-		{
-			#ifdef print_info
-			printf("socket_descriptor OK\n");
-			#endif
-		}
-
 
 	struct sockaddr_in servaddr_options;
 
@@ -41,17 +32,11 @@ int main(int argc, char **argv)
 		printf("Error inet_pton():%s\n", strerror(errno));
 		return -1;
 	}
-		else
-		{
-			#ifdef print_info
-			printf("inet_pton OK\n");
-			#endif
-		}
 
 	connect(socket_descriptor, (pointer_adrr *)&servaddr_options, sizeof(servaddr_options));
 
 	#define MAXLINE 50
-	char buffer[MAXLINE + 1];
+	char buffer[MAXLINE];
 
 	int n;
 
