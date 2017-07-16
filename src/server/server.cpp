@@ -8,12 +8,16 @@
 #include <thread>
 #include <iostream>
 
-#define pointer_socket struct sockaddr
-void client_connect(void);
-int socket_descriptor, socket_accept;
+int client_connect(int);
 
 int main(int argc, char **argv)
 {
+	#define pointer_socket struct sockaddr
+	#define PORT 54321
+
+
+	int socket_descriptor, socket_accept;
+
 	if((socket_descriptor = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
 		printf("Error socket():%s\n", strerror(errno));
@@ -26,7 +30,7 @@ int main(int argc, char **argv)
 	memset(&address_accept, 0, sizeof(address_accept));
 
 	address_clienta.sin_family = AF_INET;
-	address_clienta.sin_port = htons(54321);
+	address_clienta.sin_port = htons(PORT);
 	address_clienta.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	if((bind(socket_descriptor, (pointer_socket *)&address_clienta, sizeof(address_clienta))) == -1)
@@ -58,17 +62,43 @@ int main(int argc, char **argv)
 		}
 		else printf("connection from: %s\n", addr_clients);
 
-		std::thread thr(client_connect);
+		std::thread thr(client_connect, std::ref(socket_accept));
 	 	thr.detach();
 		}
 
 	close(socket_descriptor);
+	close(socket_accept);
 
 	return 0;
 }
 
-void client_connect(void)
+int client_connect(int socket_accept)
 {
 	std::cout << "/* client_connect start */" << '\n';
-	close(socket_accept);
+
+	#define MAXLINE 50
+	char buffer[MAXLINE];
+	int n;
+
+	while(1)
+	{
+		while((n = read(socket_accept, buffer, MAXLINE)) > 0)
+		{
+			buffer[n] = 0;
+
+		 //std::cout << buffer << std::endl;
+
+			if(strncmp(buffer,"ls",2) == 1)
+			{
+				write(socket_accept, "buffer", sizeof("buffer"));
+			}
+
+			if(strncmp(buffer,"exit",4) == 1)
+			{
+				close(socket_accept);
+				return 0;
+			}
+		}
+	}
+
 }

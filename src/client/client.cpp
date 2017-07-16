@@ -8,65 +8,65 @@
 #include <string.h>
 #include <iostream>
 
-#define pointer_adrr const struct sockaddr
-
 int main(int argc, char **argv)
 {
+	#define pointer_adrr const struct sockaddr
+	#define PORT 54321
+
 	if(argc < 2)
 	{
-		printf("Ошибка в формате команды, не введен адрес сервера\n");
-		printf("Используйте ключ -h для получения справки \n");
+		std::cout << "Ошибка в формате команды, не введен адрес сервера\n"<< std::endl;
+		std::cout << "Используйте ключ -h для получения справки \n" << std::endl;
 		return -1;
 	}
 
-	const char helpstr[3] = {'-','h','\0'};
+	const char helpstr[3] = "-h";
 
   if(strncmp(argv[1], helpstr, 2) == 0)
 	{
-		printf("формат команды ./client xxx.xxx.xxx.xxx\n Например ./client 127.1.1.1\n");
-		return -1;
+		std::cout<<"Формат команды "<<argv[0]<<" 127.1.1.1"<<std::endl;
+		return 0;
 	}
 
 	int socket_descriptor;
 
 	if((socket_descriptor = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
-		printf("Error socket():%s\n", strerror(errno));
+		std::cout << "Error socket():" <<strerror(errno) << std::endl;
 		return -1;
 	}
 
-	struct sockaddr_in servaddr_options;
+	struct sockaddr_in serv_addr;
+	memset(&serv_addr, 0 ,sizeof(serv_addr));
 
-	memset(&servaddr_options, 0 ,sizeof(servaddr_options));
+	serv_addr. sin_family = AF_INET;
+	serv_addr. sin_port = htons(PORT);
 
-	servaddr_options. sin_family = AF_INET;
-	servaddr_options. sin_port = htons(54321);
-
-	if(inet_pton(AF_INET, argv[1], &servaddr_options.sin_addr) == -1)
+	if(inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) == -1)
 	{
-		printf("Error inet_pton():%s\n", strerror(errno));
+		std::cout << "Error inet_pton():"<< strerror(errno) << std::endl;
 		return -1;
 	}
 
-	connect(socket_descriptor, (pointer_adrr *)&servaddr_options, sizeof(servaddr_options));
+	if(connect(socket_descriptor, (pointer_adrr *)&serv_addr, sizeof(serv_addr)) == -1)
+	{
+		std::cout << "Error connect:" << strerror(errno) << std::endl;
+	}
 
 	#define MAXLINE 50
 	char buffer[MAXLINE];
 
-	int n;
-
-	while((n = read(socket_descriptor, buffer, MAXLINE)) > 0)
+	while(1)
 	{
+		scanf("%s\n",buffer);
 
-		buffer[n] = 0;
-
-		if(fputs(buffer, stdout) == EOF)
+		if(strcmp(buffer,"exit") == 1)
 		{
-			printf("END SEND%s\n",strerror(errno));
+			close(socket_descriptor);
+			break;
 		}
+		write(socket_descriptor,buffer, sizeof(buffer));
 	}
-
-	close(socket_descriptor);
 
 	return 0;
 }
