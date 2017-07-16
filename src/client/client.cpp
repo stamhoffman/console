@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
-
+#include <iostream>
 
 #define pointer_adrr const struct sockaddr
 
@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 {
 	if(argc < 2)
 	{
-		printf("Ошибка в формате команды, не введен адресс сервера\n");
+		printf("Ошибка в формате команды, не введен адрес сервера\n");
 		printf("Используйте ключ -h для получения справки \n");
 		return -1;
 	}
@@ -24,6 +24,7 @@ int main(int argc, char **argv)
   if(strncmp(argv[1], helpstr, 2) == 0)
 	{
 		printf("формат команды ./client xxx.xxx.xxx.xxx\n Например ./client 127.1.1.1\n");
+		return -1;
 	}
 
 	int socket_descriptor;
