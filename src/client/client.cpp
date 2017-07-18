@@ -58,14 +58,14 @@ int main(int argc, char **argv)
 
 	while(1)
 	{
-		scanf("%s\n",buffer);
+		scanf("%s",buffer);
 
 		if(strcmp(buffer,"exit") == 1)
 		{
 			close(socket_descriptor);
 			break;
 		}
-		write(socket_descriptor,buffer, sizeof(buffer));
+		send(socket_descriptor,buffer, sizeof(buffer),0);
 	}
 
 	return 0;

@@ -39,9 +39,6 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	char addr_clients[INET_ADDRSTRLEN];
-
-	socklen_t len = sizeof(socket_accept);
 
 	if((listen(socket_descriptor, 3)) == -1)
 	{
@@ -50,17 +47,16 @@ int main(int argc, char **argv)
 
 	while(1)
 	{
+		socklen_t len = sizeof(address_accept);
+
 		if((socket_accept = accept(socket_descriptor, (pointer_socket *)&address_accept, &len)) == -1)
 		{
 			printf("Errorr accept():%s\n",strerror(errno));
 		}
-		const char *res;
-		if((res = inet_ntop(AF_INET, (pointer_socket *)&address_accept,	addr_clients,
-		sizeof(addr_clients))) == NULL)
-		{
-			printf("Error inet_ntop():%s\n",strerror(errno));
-		}
-		else printf("connection from: %s\n", addr_clients);
+
+		char addr_clients[INET_ADDRSTRLEN];
+		inet_ntop(AF_INET, &(address_accept.sin_addr),addr_clients,INET_ADDRSTRLEN);
+		printf("connection from: %s\n", addr_clients);
 
 		std::thread thr(client_connect, std::ref(socket_accept));
 	 	thr.detach();
@@ -84,9 +80,7 @@ int client_connect(int socket_accept)
 	{
 		while((n = read(socket_accept, buffer, MAXLINE)) > 0)
 		{
-			buffer[n] = 0;
-
-		 //std::cout << buffer << std::endl;
+			std::cout << buffer << std::endl;
 
 			if(strncmp(buffer,"ls",2) == 1)
 			{
