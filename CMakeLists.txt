@@ -15,4 +15,9 @@ target_link_libraries(${CLIENT_TARGET} pthread)
 add_executable(${SERVER_TARGET} ${SERVER_SOURCES})
 target_link_libraries(${SERVER_TARGET} pthread)
 
+set(FILES_TO_FORMAT
+  ${CMAKE_CURRENT_SOURCE_DIR}/${CLIENT_SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/${SERVER_SOURCES}
+  )
+set(CLANG_FORMAT_ARGS -i -style=llvm)
 include(clang-format.cmake)
