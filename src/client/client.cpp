@@ -51,11 +51,12 @@ int main(int argc, char **argv) {
   char buffer[MAXLINE];
 
   while (1) {
-    scanf("%s", buffer);
+    //scanf("%s", buffer);
+    std::cin >> buffer;
 
-    if (strcmp(buffer, "exit") == 1) {
+    if (strcmp(buffer, "exit") == 0) {
       close(socket_descriptor);
-      break;
+      return 0;
     }
 
     send(socket_descriptor, buffer, sizeof(buffer), 0);
