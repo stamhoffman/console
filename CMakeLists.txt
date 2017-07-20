@@ -21,3 +21,11 @@ set(FILES_TO_FORMAT
   )
 set(CLANG_FORMAT_ARGS -i -style=llvm)
 include(clang-format.cmake)
+
+
+set(FILES_TO_CHECK
+  ${CMAKE_CURRENT_SOURCE_DIR}/${CLIENT_SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/${SERVER_SOURCES}
+  )
+set(CPPCHEK_ARGS --enable=all --inconclusive --std=c++11)
+include(cppcheck.cmake)
