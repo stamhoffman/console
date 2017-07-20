@@ -14,3 +14,5 @@ add_executable(${CLIENT_TARGET} ${CLIENT_SOURCES})
 target_link_libraries(${CLIENT_TARGET} pthread)
 add_executable(${SERVER_TARGET} ${SERVER_SOURCES})
 target_link_libraries(${SERVER_TARGET} pthread)
+
+include(clang-format.cmake)
