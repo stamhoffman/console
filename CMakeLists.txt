@@ -10,10 +10,12 @@ set(SERVER_TARGET server)
 set(CLIENT_SOURCES src/client/client.cpp)
 set(SERVER_SOURCES src/server/server.cpp)
 
+find_package(Threads REQUIRED)
+
 add_executable(${CLIENT_TARGET} ${CLIENT_SOURCES})
-target_link_libraries(${CLIENT_TARGET} pthread)
+target_link_libraries(${CLIENT_TARGET} ${CMAKE_THREAD_LIBS_INIT})
 add_executable(${SERVER_TARGET} ${SERVER_SOURCES})
-target_link_libraries(${SERVER_TARGET} pthread)
+target_link_libraries(${SERVER_TARGET} ${CMAKE_THREAD_LIBS_INIT})
 
 set(FILES_TO_FORMAT
   ${CMAKE_CURRENT_SOURCE_DIR}/${CLIENT_SOURCES}
