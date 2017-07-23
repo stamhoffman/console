@@ -3,31 +3,34 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <thread>
 #include <unistd.h>
 
+void read_server(int sd);
 int main(int argc, char **argv) {
 #define pointer_adrr const struct sockaddr
 #define PORT 54321
 
   if (argc < 2) {
-    std::cout << "Ошибка в формате команды, не введен адрес сервера\n"
-              << std::endl;
-    std::cout << "Используйте ключ -h для получения справки \n" << std::endl;
+    std::cout << "Ошибка в формате команды, не введен адрес сервера \n";
+    std::cout << "Используйте ключ -h для получения справки \n";
     return -1;
   }
 
-  const char helpstr[3] = "-h";
+  const std::string const_buffer("-h");
 
-  if (strncmp(argv[1], helpstr, 2) == 0) {
-    std::cout << "Формат команды " << argv[0] << " 127.1.1.1" << std::endl;
+  if (const_buffer.compare(argv[1]) == 0) {
+    std::cout << "Формат команды " << argv[0] << " 127.0.0.1 \n";
     return 0;
   }
 
   int socket_descriptor;
+  socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
 
-  if ((socket_descriptor = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+  if (socket_descriptor == -1) {
     std::cout << "Error socket():" << strerror(errno) << std::endl;
     return -1;
   }
@@ -47,19 +50,28 @@ int main(int argc, char **argv) {
     std::cout << "Error connect:" << strerror(errno) << std::endl;
   }
 
-#define MAXLINE 50
-  char buffer[MAXLINE];
+  std::string in_string;
 
-  while (1) {
-    //scanf("%s", buffer);
-    std::cin >> buffer;
+  for (;;) {
+    std::cin >> in_string;
 
-    if (strcmp(buffer, "exit") == 0) {
+    if (in_string.compare("exit") == 0) {
       close(socket_descriptor);
       return 0;
     }
 
-    send(socket_descriptor, buffer, sizeof(buffer), 0);
+    send(socket_descriptor, (const void *)&in_string, sizeof(in_string), 0);
+    std::cout << in_string;
+  
   }
+
   return 0;
+}
+
+void read_server(int socket_descriptor) {
+  char recv_buffer[100];
+  for(;;){
+    recv(socket_descriptor, recv_buffer, sizeof(recv_buffer), 0);
+    std::cout << recv_buffer << '\n';
+  }
 }
