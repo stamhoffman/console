@@ -9,7 +9,6 @@
 #include <thread>
 #include <unistd.h>
 
-void read_server(int sd);
 int main(int argc, char **argv) {
 #define pointer_adrr const struct sockaddr
 #define PORT 54321
@@ -50,28 +49,13 @@ int main(int argc, char **argv) {
     std::cout << "Error connect:" << strerror(errno) << std::endl;
   }
 
-  std::string in_string;
+  std::string send_buffer;
 
-  for (;;) {
-    std::cin >> in_string;
-
-    if (in_string.compare("exit") == 0) {
-      close(socket_descriptor);
-      return 0;
-    }
-
-    send(socket_descriptor, (const void *)&in_string, sizeof(in_string), 0);
-    std::cout << in_string;
-  
+  while (1) {
+    std::cin >> send_buffer;
+    send(socket_descriptor, (const void *)send_buffer.data(),
+         send_buffer.size(), 0);
   }
 
   return 0;
-}
-
-void read_server(int socket_descriptor) {
-  char recv_buffer[100];
-  for(;;){
-    recv(socket_descriptor, recv_buffer, sizeof(recv_buffer), 0);
-    std::cout << recv_buffer << '\n';
-  }
 }

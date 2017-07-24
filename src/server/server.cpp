@@ -8,8 +8,7 @@
 #include <thread>
 #include <unistd.h>
 
-int client_connect(int);
-
+int client_task(int sd);
 int main(int argc, char **argv) {
 #define ps struct sockaddr
 #define PORT 54321
@@ -40,7 +39,7 @@ int main(int argc, char **argv) {
     printf("Error listen()%s\n", strerror(errno));
   }
 
-  for (;;) {
+  while (1) {
     socklen_t length = sizeof(client_addr);
 
     client_socket = accept(list_socket, (ps *)&client_addr, &length);
@@ -52,35 +51,27 @@ int main(int argc, char **argv) {
 
     inet_ntop(AF_INET, &(client_addr.sin_addr), addr_clients, INET_ADDRSTRLEN);
     printf("connection from: %s\n", addr_clients);
-
-    // std::thread thr(client_connect, client_socket);
-    // thr.detach();
-
-    std::string read_buffer;
-
-    //while ((read(client_socket,(void *)&read_buffer, sizeof(read_buffer))) > 0) {
-    //  std::cout << read_buffer;
-      // send(client_socket, (const void *)&read_buffer, sizeof(read_buffer),
-      // 0);
-    //}
+    std::thread new_client(client_task, client_socket);
+    new_client.detach();
   }
 
-  close(client_socket);
   close(list_socket);
-
+  close(client_socket);
   return 0;
 }
 
-int client_connect(int client_socket) {
-  std::cout << "/* client_connect start */" << '\n';
+int client_task(int client_sock) {
+  std::array<char, 1024> read_buff = {'\0'};
 
-  std::string read_buffer;
-
-  while ((read(client_socket, &read_buffer, sizeof(read_buffer))) > 0) {
-    std::cout << read_buffer;
-    send(client_socket, (const void *)&read_buffer, sizeof(read_buffer), 0);
+  while (1) {
+    while (read(client_sock, (void *)read_buff.data(), read_buff.size()) > 0) {
+      for (auto arr : read_buff) {
+        std::cout << arr;
+      }
+      std::cout << std::endl;
+      read_buff = {'\0'};
+    }
   }
-  close(client_socket);
-
+  close(client_sock);
   return 0;
 }
