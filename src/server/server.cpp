@@ -61,16 +61,18 @@ int main(int argc, char **argv) {
 }
 
 int client_task(int client_sock) {
-  std::array<char, 1024> read_buff = {'\0'};
 
-  while (1) {
-    while (read(client_sock, (void *)read_buff.data(), read_buff.size()) > 0) {
-      for (auto arr : read_buff) {
-        std::cout << arr;
-      }
-      std::cout << std::endl;
-      read_buff = {'\0'};
+  std::array<char, 1024> read_buff = {'\0'};
+  std::array<char, 1024> send_buff = {'\0'};
+
+  while (read(client_sock, (void *)read_buff.data(), read_buff.size()) > 0) {
+    send_buff = read_buff;
+    send(client_sock, (const void *)send_buff.data(), send_buff.size(), 0);
+    for (auto arr : read_buff) {
+      std::cout << arr;
     }
+    std::cout << std::endl;
+    read_buff = {'\0'};
   }
   close(client_sock);
   return 0;

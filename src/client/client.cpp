@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 int main(int argc, char **argv) {
-#define pointer_adrr const struct sockaddr
+#define pointer_addr const struct sockaddr
 #define PORT 54321
 
   if (argc < 2) {
@@ -26,10 +26,10 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  int socket_descriptor;
-  socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+  int sock_dsc;
+  sock_dsc = socket(AF_INET, SOCK_STREAM, 0);
 
-  if (socket_descriptor == -1) {
+  if (sock_dsc == -1) {
     std::cout << "Error socket():" << strerror(errno) << std::endl;
     return -1;
   }
@@ -44,17 +44,22 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  if (connect(socket_descriptor, (pointer_adrr *)&serv_addr,
-              sizeof(serv_addr)) == -1) {
+  if (connect(sock_dsc, (pointer_addr *)&serv_addr, sizeof(serv_addr)) == -1) {
     std::cout << "Error connect:" << strerror(errno) << std::endl;
   }
 
-  std::string send_buffer;
+  std::array<char, 1024> send_buff = {'\0'};
+  std::array<char, 1024> read_buff = {'\0'};
 
   while (1) {
-    std::cin >> send_buffer;
-    send(socket_descriptor, (const void *)send_buffer.data(),
-         send_buffer.size(), 0);
+    std::cin >> send_buff.data();
+    send(sock_dsc, (const void *)send_buff.data(), send_buff.size(), 0);
+    send_buff = {'\0'};
+
+    while (read(sock_dsc, (void *)read_buff.data(), read_buff.size()) < 0)
+      ;
+    std::cout << "ECHO:" << read_buff.data() << std::endl;
+    read_buff = {'\0'};
   }
 
   return 0;
