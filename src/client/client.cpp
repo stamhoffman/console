@@ -1,13 +1,17 @@
-#include <arpa/inet.h>
 #include <errno.h>
-#include <iostream>
 #include <stdio.h>
 #include <string.h>
-#include <string>
+
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <thread>
 #include <unistd.h>
+
+#include <array>
+#include <iostream>
+#include <string>
+
+#include <thread>
 
 int main(int argc, char **argv) {
 #define pointer_addr const struct sockaddr

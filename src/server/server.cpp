@@ -1,12 +1,16 @@
-#include <arpa/inet.h>
 #include <errno.h>
-#include <iostream>
 #include <stdio.h>
 #include <string.h>
+
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <thread>
 #include <unistd.h>
+
+#include <array>
+#include <iostream>
+
+#include <thread>
 
 int client_task(int sd);
 int main(int argc, char **argv) {
