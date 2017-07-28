@@ -1,0 +1,6 @@
+/home/stam/workspace/console/Debug/CMakeFiles/rebuild_cache.dir
+/home/stam/workspace/console/Debug/CMakeFiles/edit_cache.dir
+/home/stam/workspace/console/Debug/CMakeFiles/client.dir
+/home/stam/workspace/console/Debug/CMakeFiles/server.dir
+/home/stam/workspace/console/Debug/CMakeFiles/check.dir
+/home/stam/workspace/console/Debug/CMakeFiles/format.dir
