@@ -12,7 +12,7 @@
 
 #include <thread>
 
-int client_task(int sd);
+int client_task(int client_socket);
 int main(int argc, char **argv) {
 #define ps struct sockaddr
 #define PORT 54321
