@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 
     while (read(sock_dsc, (void *)read_buff.data(), read_buff.size()) < 0)
       ;
-    std::cout << "ECHO:" << read_buff.data() << std::endl;
+    std::cout << read_buff.data() << std::endl;
     read_buff = {'\0'};
   }
 

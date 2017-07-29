@@ -12,7 +12,8 @@
 
 #include <thread>
 
-int client_task(int sd);
+int client_task(int sd, std::string prog);
+
 int main(int argc, char **argv) {
 #define ps struct sockaddr
 #define PORT 54321
@@ -55,31 +56,37 @@ int main(int argc, char **argv) {
 
     inet_ntop(AF_INET, &(client_addr.sin_addr), addr_clients, INET_ADDRSTRLEN);
     printf("connection from: %s\n", addr_clients);
-    std::thread new_client(client_task, client_socket);
-    new_client.detach();
-  }
 
+    int p_pid;
+    p_pid = fork();
+    if (p_pid == -1) {
+      std::cout << "Error fork()" << strerror(errno) << std::endl;
+    } else if (p_pid == 0) {
+      while (1) {
+        std::string prog;
+        if(read(client_socket, (void *)prog.data(), prog.size()) > 0);
+        std::cout << prog << std::endl;
+
+        std::thread new_client(client_task, client_socket, prog);
+        new_client.detach();
+        char send_str[5000] = {"\0"};
+        fscanf(stdout, "%s", send_str);
+        std::cout << "cout" << send_str << std::endl;
+        send(client_socket, (const void *)send_str, sizeof(send_str), 0);
+      }
+    }
+  }
   close(list_socket);
   close(client_socket);
   return 0;
 }
 
-int client_task(int client_sock) {
+int client_task(int client_socket, std::string prog) {
 
-  std::array<char, 1024> read_buff = {'\0'};
-  std::array<char, 1024> send_buff = {'\0'};
+  std::string path;
+  path = "/bin/ls";
+  std::cout << "start new_client" << std::endl;
+  execl("/bin/ls", "-l", NULL);
 
-  while (read(client_sock, (void *)read_buff.data(), read_buff.size()) > 0) {
-
-    execl("/bin/bash", "bash", "-l", read_buff.data(), NULL);
-
-    send(client_sock, (const void *)send_buff.data(), send_buff.size(), 0);
-    for (auto arr : read_buff) {
-      std::cout << arr;
-    }
-    std::cout << std::endl;
-    read_buff = {'\0'};
-  }
-  close(client_sock);
   return 0;
 }
