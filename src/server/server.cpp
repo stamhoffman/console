@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 
   list_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (list_socket == -1) {
-    printf("Error socket():%s\n", strerror(errno));
+    std::cout << "Error socket():" << strerror(errno) << "\n";
     return -1;
   }
 
@@ -36,12 +36,12 @@ int main(int argc, char **argv) {
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if ((bind(list_socket, (ps *)&serv_addr, sizeof(serv_addr))) == -1) {
-    printf("Error bind():%s\n", strerror(errno));
+    std::cout << "Error bind():" << strerror(errno) << "\n";
     return -1;
   }
 
   if ((listen(list_socket, 3)) == -1) {
-    printf("Error listen()%s\n", strerror(errno));
+    std::cout << "Error listen():" << strerror(errno) << "\n";
   }
 
   while (1) {
@@ -49,13 +49,14 @@ int main(int argc, char **argv) {
 
     client_socket = accept(list_socket, (ps *)&client_addr, &length);
     if (client_socket == -1) {
-      printf("Errorr accept():%s\n", strerror(errno));
+      std::cout << "Errorr accept():" << strerror(errno) << "\n";
     }
 
     char addr_clients[INET_ADDRSTRLEN];
 
     inet_ntop(AF_INET, &(client_addr.sin_addr), addr_clients, INET_ADDRSTRLEN);
     printf("connection from: %s\n", addr_clients);
+    std::cout << "connection from:" << addr_clients << "\n";
 
     int p_pid;
     p_pid = fork();
@@ -64,7 +65,8 @@ int main(int argc, char **argv) {
     } else if (p_pid == 0) {
       while (1) {
         std::string prog;
-        if(read(client_socket, (void *)prog.data(), prog.size()) > 0);
+        if (read(client_socket, (void *)prog.data(), prog.size()) > 0)
+          ;
         std::cout << prog << std::endl;
 
         std::thread new_client(client_task, client_socket, prog);
