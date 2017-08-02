@@ -15,7 +15,7 @@
 
 int client_connect();
 int client_task(int sd);
-int execute_command(std::string prog_name, int client_socket);
+int execute_command(std::array<char, 1000> prog_name, int client_socket);
 
 int main(int argc, char **argv) {
 #define ps struct sockaddr
@@ -83,17 +83,17 @@ int main(int argc, char **argv) {
 int client_task(int client_socket) {
   while (1) {
     int read_byte;
-    std::string prog(100, ' ');
-    read_byte = read(client_socket, (void *)prog.data(), prog.size());
+    std::array<char, 1000> prog_name = {'\0'};
+    read_byte = read(client_socket, (void *)prog_name.data(), prog_name.size());
     if (read_byte > 1) {
-      execute_command(prog, client_socket);
+      execute_command(prog_name, client_socket);
     }
   }
   close(client_socket);
   return 0;
 }
 
-int execute_command(std::string prog_name, int client_socket) {
+int execute_command(std::array<char, 1000> prog_name, int client_socket) {
   int p_pid;
   p_pid = fork();
   if (p_pid == -1) {
@@ -101,7 +101,7 @@ int execute_command(std::string prog_name, int client_socket) {
     return -1;
   } else if (p_pid == 0) {
     dup2(client_socket, 1);
-    execlp(prog_name.c_str(), "-l", NULL);
+    execlp(prog_name.data(), "-l", NULL);
   }
   return 1;
 }
