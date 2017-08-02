@@ -82,10 +82,10 @@ int main(int argc, char **argv) {
 
 int client_task(int client_socket) {
   while (1) {
-    int byte_accepted = 0;
+    int read_byte;
     std::string prog(100, ' ');
-    byte_accepted = read(client_socket, (void *)prog.data(), prog.size());
-    if (byte_accepted > 1) {
+    read_byte = read(client_socket, (void *)prog.data(), prog.size());
+    if (read_byte > 1) {
       execute_command(prog, client_socket);
     }
   }
