@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
 
   if (sock_dsc == -1) {
     std::cout << "Error socket():" << strerror(errno) << std::endl;
+    close(sock_dsc);
     return -1;
   }
 
@@ -45,6 +46,7 @@ int main(int argc, char **argv) {
 
   if (inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) == -1) {
     std::cout << "Error inet_pton():" << strerror(errno) << std::endl;
+    close(sock_dsc);
     return -1;
   }
 
@@ -52,19 +54,14 @@ int main(int argc, char **argv) {
     std::cout << "Error connect:" << strerror(errno) << std::endl;
   }
 
-  std::array<char, 1024> send_buff = {'\0'};
-  std::array<char, 1024> read_buff = {'\0'};
+  std::array<char, 10> send_buff = {'\0'};
 
   while (1) {
     std::cin >> send_buff.data();
     send(sock_dsc, (const void *)send_buff.data(), send_buff.size(), 0);
     send_buff = {'\0'};
-
-    while (read(sock_dsc, (void *)read_buff.data(), read_buff.size()) < 0)
-      ;
-    std::cout << read_buff.data() << std::endl;
-    read_buff = {'\0'};
   }
 
+  close(sock_dsc);
   return 0;
 }

@@ -12,7 +12,8 @@
 
 #include <thread>
 
-int client_task(int sd, std::string prog);
+int client_task(int sd);
+int execute_command(std::string prog_name);
 
 int main(int argc, char **argv) {
 #define ps struct sockaddr
@@ -37,58 +38,69 @@ int main(int argc, char **argv) {
 
   if ((bind(list_socket, (ps *)&serv_addr, sizeof(serv_addr))) == -1) {
     std::cout << "Error bind():" << strerror(errno) << "\n";
+    close(list_socket);
     return -1;
   }
 
   if ((listen(list_socket, 3)) == -1) {
     std::cout << "Error listen():" << strerror(errno) << "\n";
+    close(list_socket);
+    return -1;
   }
 
   while (1) {
     socklen_t length = sizeof(client_addr);
-
+    std::cout << "start accept" << '\n';
     client_socket = accept(list_socket, (ps *)&client_addr, &length);
     if (client_socket == -1) {
       std::cout << "Errorr accept():" << strerror(errno) << "\n";
+      close(list_socket);
+      return -1;
     }
 
     char addr_clients[INET_ADDRSTRLEN];
 
     inet_ntop(AF_INET, &(client_addr.sin_addr), addr_clients, INET_ADDRSTRLEN);
-    printf("connection from: %s\n", addr_clients);
     std::cout << "connection from:" << addr_clients << "\n";
 
     int p_pid;
     p_pid = fork();
     if (p_pid == -1) {
       std::cout << "Error fork()" << strerror(errno) << std::endl;
+      close(client_socket);
+      return -1;
     } else if (p_pid == 0) {
-      while (1) {
-        std::string prog;
-        if (read(client_socket, (void *)prog.data(), prog.size()) > 0)
-          ;
-        std::cout << prog << std::endl;
-
-        std::thread new_client(client_task, client_socket, prog);
-        new_client.detach();
-        char send_str[5000] = {"\0"};
-        fscanf(stdout, "%s", send_str);
-        std::cout << "cout" << send_str << std::endl;
-        send(client_socket, (const void *)send_str, sizeof(send_str), 0);
-      }
+      client_task(client_socket);
     }
   }
+
   close(list_socket);
+  return 1;
+}
+
+int client_task(int client_socket) {
+  while (1) {
+    int byte_accepted = 0;
+    std::string prog(10,' ');
+    byte_accepted = read(client_socket, (void *)prog.data(), prog.size());
+    if (byte_accepted > 1) {
+      execute_command(prog);
+    }
+  }
   close(client_socket);
   return 0;
 }
 
-int client_task(int client_socket, std::string prog) {
-
+int execute_command(std::string prog_name) {
+  int p_pid;
   std::string path;
-  path = "/bin/ls";
-  std::cout << "start new_client" << std::endl;
-  execl("/bin/ls", "-l", NULL);
-
-  return 0;
+  path = "/bin/" + prog_name;
+  p_pid = fork();
+  if (p_pid == -1) {
+    std::cout << "Error fork()" << strerror(errno) << std::endl;
+    return -1;
+  } else if (p_pid == 0) {
+    execl(path.c_str(), "-l", NULL);
+  }
+  return 1;
 }
