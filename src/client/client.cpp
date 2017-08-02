@@ -53,6 +53,8 @@ int main(int argc, char **argv) {
 
   if (connect(sock_dsc, (pointer_addr *)&serv_addr, sizeof(serv_addr)) == -1) {
     std::cout << "Error connect:" << strerror(errno) << std::endl;
+    return -1;
+    close(sock_dsc);
   }
 
   std::array<char, 1000> send_buff = {'\0'};
