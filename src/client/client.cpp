@@ -55,16 +55,16 @@ int main(int argc, char **argv) {
     std::cout << "Error connect:" << strerror(errno) << std::endl;
   }
 
-  std::array<char, 100> send_buff = {'\0'};
+  std::array<char, 1000> send_buff = {'\0'};
   std::array<char, 1000> read_buff = {'\0'};
 
   while (1) {
     std::cin >> send_buff.data();
     send(sock_dsc, (const void *)send_buff.data(), send_buff.size(), 0);
     send_buff = {'\0'};
-    int byte_accepted;
-    byte_accepted = read(sock_dsc, (void *)read_buff.data(), read_buff.size());
-    if (byte_accepted > 1) {
+    int read_byte;
+    read_byte = read(sock_dsc, (void *)read_buff.data(), read_buff.size());
+    if (read_byte > 1) {
       std::cout << "server:" << read_buff.data() << '\n';
     }
   }
