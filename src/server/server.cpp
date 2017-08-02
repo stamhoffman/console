@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -12,12 +13,13 @@
 
 #include <thread>
 
+int client_connect();
 int client_task(int sd);
-int execute_command(std::string prog_name);
+int execute_command(std::string prog_name, int client_socket);
 
 int main(int argc, char **argv) {
 #define ps struct sockaddr
-#define PORT 54321
+  const int PORT = 54321;
 
   int list_socket, client_socket;
 
@@ -81,26 +83,25 @@ int main(int argc, char **argv) {
 int client_task(int client_socket) {
   while (1) {
     int byte_accepted = 0;
-    std::string prog(10,' ');
+    std::string prog(100, ' ');
     byte_accepted = read(client_socket, (void *)prog.data(), prog.size());
     if (byte_accepted > 1) {
-      execute_command(prog);
+      execute_command(prog, client_socket);
     }
   }
   close(client_socket);
   return 0;
 }
 
-int execute_command(std::string prog_name) {
+int execute_command(std::string prog_name, int client_socket) {
   int p_pid;
-  std::string path;
-  path = "/bin/" + prog_name;
   p_pid = fork();
   if (p_pid == -1) {
     std::cout << "Error fork()" << strerror(errno) << std::endl;
     return -1;
   } else if (p_pid == 0) {
-    execl(path.c_str(), "-l", NULL);
+    dup2(client_socket, 1);
+    execlp(prog_name.c_str(), "-l", NULL);
   }
   return 1;
 }
