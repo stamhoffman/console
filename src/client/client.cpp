@@ -15,7 +15,6 @@
 
 int main(int argc, char **argv) {
 #define pointer_addr const struct sockaddr
-
   const int PORT = 54321;
 
   if (argc < 2) {
