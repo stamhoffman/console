@@ -15,7 +15,7 @@
 
 int main(int argc, char **argv) {
 #define pointer_addr const struct sockaddr
-  const int PORT = 54321;
+  const int PORT = 54321; // 54321
 
   if (argc < 2) {
     std::cout << "Ошибка в формате команды, не введен адрес сервера \n";
@@ -60,13 +60,22 @@ int main(int argc, char **argv) {
   std::array<char, 1000> read_buff = {'\0'};
 
   while (1) {
-    std::cin >> send_buff.data();
-    send(sock_dsc, (const void *)send_buff.data(), send_buff.size(), 0);
-    send_buff = {'\0'};
+    std::cin.getline(send_buff.data(), 1000);
+    int ret_send;
+    ret_send =
+        send(sock_dsc, (const void *)send_buff.data(), send_buff.size(), 0);
+    if (ret_send == -1) {
+      std::cout << "Error send():" << strerror(errno) << std::endl;
+    }
+    send_buff.fill('\0');
     int read_byte;
+
     read_byte = read(sock_dsc, (void *)read_buff.data(), read_buff.size());
     if (read_byte > 1) {
-      std::cout << "server:" << read_buff.data() << '\n';
+      std::cout << "server: " << read_buff.data() << std::endl;
+      read_buff.fill('\0');
+    } else {
+      std::cout << "Error read():" << strerror(errno) << std::endl;
     }
   }
 

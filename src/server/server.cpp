@@ -15,11 +15,12 @@
 
 int client_connect();
 int client_task(int sd);
-int execute_command(std::array<char, 1000> prog_name, int client_socket);
+int execute_command(std::array<char, 1000> prog_name,
+                    std::array<char, 1000> prog_key, int client_socket);
 
 int main(int argc, char **argv) {
 #define ps struct sockaddr
-  const int PORT = 54321;
+  const int PORT = 54321; // 54321
 
   int list_socket, client_socket;
 
@@ -71,7 +72,7 @@ int main(int argc, char **argv) {
       std::cout << "Error fork()" << strerror(errno) << std::endl;
       close(client_socket);
       return -1;
-    } else if (p_pid == 0) {
+    } else if (p_pid == 0) { /* message */
       client_task(client_socket);
     }
   }
@@ -81,19 +82,53 @@ int main(int argc, char **argv) {
 }
 
 int client_task(int client_socket) {
+  int read_byte = 0;
+  std::array<char, 1000> read_buff = {'\0'};
+  std::array<char, 1000> prog_name = {'\0'};
+  std::array<char, 1000> prog_key = {'\0'};
+  std::array<char, 1000>::iterator rb_itr = read_buff.begin();
+  std::array<char, 1000>::iterator pn_itr = prog_name.begin();
+  std::array<char, 1000>::iterator key_itr = prog_key.begin();
+  std::cout << "client start" << '\n';
+
   while (1) {
-    int read_byte;
-    std::array<char, 1000> prog_name = {'\0'};
-    read_byte = read(client_socket, (void *)prog_name.data(), prog_name.size());
+    read_buff.fill('\0');
+    prog_name.fill('\0');
+    prog_key.fill('\0');
+    rb_itr = read_buff.begin();
+    pn_itr = prog_name.begin();
+    key_itr = prog_key.begin();
+
+    read_byte = 0;
+    read_byte = read(client_socket, (void *)read_buff.data(), read_buff.size());
+
     if (read_byte > 1) {
-      execute_command(prog_name, client_socket);
+      while ((*rb_itr != ' ') && (rb_itr != read_buff.end())) {
+        *pn_itr = *rb_itr;
+        rb_itr++;
+        pn_itr++;
+      }
+
+      if (rb_itr != read_buff.end()) {
+        rb_itr++;
+        while (rb_itr != read_buff.end()) {
+          *key_itr = *rb_itr;
+          key_itr++;
+          rb_itr++;
+        }
+      }
+
+      execute_command(prog_name, prog_key, client_socket);
+    } else {
+      return -1;
     }
   }
   close(client_socket);
   return 0;
 }
 
-int execute_command(std::array<char, 1000> prog_name, int client_socket) {
+int execute_command(std::array<char, 1000> prog_name,
+                    std::array<char, 1000> prog_key, int client_socket) {
   int p_pid;
   p_pid = fork();
   if (p_pid == -1) {
@@ -101,7 +136,12 @@ int execute_command(std::array<char, 1000> prog_name, int client_socket) {
     return -1;
   } else if (p_pid == 0) {
     dup2(client_socket, 1);
-    execlp(prog_name.data(), "-l", NULL);
+
+    if (prog_key[0] == '\0') {
+      execlp(prog_name.data(), prog_name.data(), NULL);
+    } else {
+      execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
+    }
   }
   return 1;
 }
