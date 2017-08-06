@@ -13,14 +13,22 @@
 
 #include <thread>
 
-int client_connect();
+#include <algorithm>
+#include <iterator>
+#include <numeric>
+
 int client_task(int sd);
+
+int pars_line(std::array<char, 1000> *read_buff,
+              std::array<char, 1000> *prog_name,
+              std::array<char, 1000> *prog_key);
+
 int execute_command(std::array<char, 1000> prog_name,
                     std::array<char, 1000> prog_key, int client_socket);
 
 int main(int argc, char **argv) {
 #define ps struct sockaddr
-  const int PORT = 54321; // 54321
+  const int PORT = 54322;
 
   int list_socket, client_socket;
 
@@ -92,15 +100,14 @@ int client_task(int client_socket) {
   std::cout << "client start" << '\n';
 
   while (1) {
-    read_buff.fill('\0');
-    prog_name.fill('\0');
-    prog_key.fill('\0');
     rb_itr = read_buff.begin();
     pn_itr = prog_name.begin();
     key_itr = prog_key.begin();
 
     read_byte = 0;
     read_byte = read(client_socket, (void *)read_buff.data(), read_buff.size());
+
+    pars_line(&read_buff, &prog_name, &prog_key);
 
     if (read_byte > 1) {
       while ((*rb_itr != ' ') && (rb_itr != read_buff.end())) {
@@ -143,5 +150,26 @@ int execute_command(std::array<char, 1000> prog_name,
       execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
     }
   }
+  return 1;
+}
+
+int pars_line(std::array<char, 1000> *read_buff,
+              std::array<char, 1000> *prog_name,
+              std::array<char, 1000> *prog_key) {
+
+  const char space = ' ';
+
+  std::array<char, 1000>::iterator rb_itr = (*read_buff).begin();
+  std::array<char, 1000>::iterator pn_itr = (*prog_name).begin();
+  std::array<char, 1000>::iterator key_itr = (*prog_key).begin();
+
+  rb_itr = std::find(std::begin(*read_buff), std::end(*read_buff), space);
+
+  std::copy((*read_buff).begin(), rb_itr, pn_itr);
+  std::copy(rb_itr + 1, (*read_buff).end(), key_itr);
+
+  std::cout << "prog_name:" << (*prog_name).data() << '\n';
+  std::cout << "prog_key:" << (*prog_key).data() << '\n';
+
   return 1;
 }
