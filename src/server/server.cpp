@@ -1,34 +1,19 @@
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
 
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include "config.h"
 
-#include <array>
-#include <iostream>
-
-#include <thread>
-
-#include <algorithm>
-#include <iterator>
-#include <numeric>
-
-int client_task(int sd);
 
 int pars_line(std::array<char, 1000> *read_buff,
               std::array<char, 1000> *prog_name,
               std::array<char, 1000> *prog_key);
+
+int client_task(int sd);
 
 int execute_command(std::array<char, 1000> prog_name,
                     std::array<char, 1000> prog_key, int client_socket);
 
 int main(int argc, char **argv) {
 #define ps struct sockaddr
-  const int PORT = 54322;
+
 
   int list_socket, client_socket;
 
@@ -90,7 +75,8 @@ int main(int argc, char **argv) {
 }
 
 int client_task(int client_socket) {
-  std::cout << "client start" << '\n';
+  int count = 0;
+  std::cout << "client start(" << count << ")" << '\n';
 
   int read_byte = 0;
   std::array<char, 1000> read_buff = {'\0'};
@@ -114,7 +100,8 @@ int client_task(int client_socket) {
 
 int execute_command(std::array<char, 1000> prog_name,
                     std::array<char, 1000> prog_key, int client_socket) {
-  std::cout << "execute_command start" << '\n';
+  int count = 0;
+  std::cout << "execute_command start(" << count << ")" << '\n';
   int p_pid;
   p_pid = fork();
   if (p_pid == -1) {
@@ -122,34 +109,22 @@ int execute_command(std::array<char, 1000> prog_name,
     return -1;
   } else if (p_pid == 0) {
     dup2(client_socket, 1);
-
+    int ret;
     if (prog_key[0] == '\0') {
-      execlp(prog_name.data(), prog_name.data(), NULL);
+      ret = execlp(prog_name.data(), prog_name.data(), NULL, NULL);
+      if (ret == -1) {
+        std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
+        close(client_socket);
+        return 0;
+      }
     } else {
-      execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
+      ret = execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
+      if (ret == -1) {
+        std::cout << "Error execlp(2)" << strerror(errno) << std::endl;
+        close(client_socket);
+        return 0;
+      }
     }
   }
-  return 1;
-}
-
-int pars_line(std::array<char, 1000> *read_buff,
-              std::array<char, 1000> *prog_name,
-              std::array<char, 1000> *prog_key) {
-
-  std::cout << "pars_line start" << '\n';
-  const char space = ' ';
-
-  std::array<char, 1000>::iterator rb_itr = (*read_buff).begin();
-  std::array<char, 1000>::iterator pn_itr = (*prog_name).begin();
-  std::array<char, 1000>::iterator key_itr = (*prog_key).begin();
-
-  rb_itr = std::find(std::begin(*read_buff), std::end(*read_buff), space);
-
-  std::copy((*read_buff).begin(), rb_itr, pn_itr);
-  std::copy(rb_itr + 1, (*read_buff).end(), key_itr);
-
-  std::cout << "prog_name:" << (*prog_name).data() << '\n';
-  std::cout << "prog_key:" << (*prog_key).data() << '\n';
-
   return 1;
 }

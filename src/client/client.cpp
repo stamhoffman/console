@@ -68,12 +68,15 @@ int main(int argc, char **argv) {
       std::cout << "Error send():" << strerror(errno) << std::endl;
     }
 
-    int read_byte;
+    int read_byte = 0;
+    int count = 0;
 
     read_byte = read(sock_dsc, (void *)read_buff.data(), read_buff.size());
     if (read_byte > 1) {
-      std::cout << "server: " << read_buff.data() << std::endl;
-
+      std::cout << "server(" << count << "):" << '\n'
+                << read_buff.data() << '\n';
+      std::cout << "---------------------------------------------------"
+                << '\n';
     } else {
       std::cout << "Error read():" << strerror(errno) << std::endl;
     }
