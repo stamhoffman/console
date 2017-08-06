@@ -90,41 +90,19 @@ int main(int argc, char **argv) {
 }
 
 int client_task(int client_socket) {
+  std::cout << "client start" << '\n';
+
   int read_byte = 0;
   std::array<char, 1000> read_buff = {'\0'};
   std::array<char, 1000> prog_name = {'\0'};
   std::array<char, 1000> prog_key = {'\0'};
-  std::array<char, 1000>::iterator rb_itr = read_buff.begin();
-  std::array<char, 1000>::iterator pn_itr = prog_name.begin();
-  std::array<char, 1000>::iterator key_itr = prog_key.begin();
-  std::cout << "client start" << '\n';
 
   while (1) {
-    rb_itr = read_buff.begin();
-    pn_itr = prog_name.begin();
-    key_itr = prog_key.begin();
-
     read_byte = 0;
     read_byte = read(client_socket, (void *)read_buff.data(), read_buff.size());
 
-    pars_line(&read_buff, &prog_name, &prog_key);
-
     if (read_byte > 1) {
-      while ((*rb_itr != ' ') && (rb_itr != read_buff.end())) {
-        *pn_itr = *rb_itr;
-        rb_itr++;
-        pn_itr++;
-      }
-
-      if (rb_itr != read_buff.end()) {
-        rb_itr++;
-        while (rb_itr != read_buff.end()) {
-          *key_itr = *rb_itr;
-          key_itr++;
-          rb_itr++;
-        }
-      }
-
+      pars_line(&read_buff, &prog_name, &prog_key);
       execute_command(prog_name, prog_key, client_socket);
     } else {
       return -1;
@@ -136,6 +114,7 @@ int client_task(int client_socket) {
 
 int execute_command(std::array<char, 1000> prog_name,
                     std::array<char, 1000> prog_key, int client_socket) {
+  std::cout << "execute_command start" << '\n';
   int p_pid;
   p_pid = fork();
   if (p_pid == -1) {
@@ -157,6 +136,7 @@ int pars_line(std::array<char, 1000> *read_buff,
               std::array<char, 1000> *prog_name,
               std::array<char, 1000> *prog_key) {
 
+  std::cout << "pars_line start" << '\n';
   const char space = ' ';
 
   std::array<char, 1000>::iterator rb_itr = (*read_buff).begin();
