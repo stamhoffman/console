@@ -8,7 +8,7 @@ set(CLIENT_TARGET client)
 set(SERVER_TARGET server)
 
 set(CLIENT_SOURCES src/client/client.cpp)
-set(SERVER_SOURCES src/server/server.cpp)
+set(SERVER_SOURCES src/server/server.cpp src/server/pars_line.cpp)
 
 find_package(Threads REQUIRED)
 

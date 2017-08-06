@@ -17,6 +17,6 @@
 #include <iterator>
 #include <numeric>
 
-#include "pars_line.cpp"
+#include "pars_line.h"
 
 const int PORT = 54322;

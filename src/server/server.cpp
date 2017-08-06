@@ -1,11 +1,6 @@
 
 #include "config.h"
 
-
-int pars_line(std::array<char, 1000> *read_buff,
-              std::array<char, 1000> *prog_name,
-              std::array<char, 1000> *prog_key);
-
 int client_task(int sd);
 
 int execute_command(std::array<char, 1000> prog_name,
