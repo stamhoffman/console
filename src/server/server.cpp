@@ -74,9 +74,9 @@ int client_task(int client_socket) {
   std::cout << "client start(" << count << ")" << '\n';
 
   int read_byte = 0;
-  std::array<char, 1000> read_buff = {'\0'};
-  std::array<char, 1000> prog_name = {'\0'};
-  std::array<char, 1000> prog_key = {'\0'};
+  std::array<char, 1000> read_buff = {{'\0'}};
+  std::array<char, 1000> prog_name = {{'\0'}};
+  std::array<char, 1000> prog_key = {{'\0'}};
 
   while (1) {
     read_byte = 0;

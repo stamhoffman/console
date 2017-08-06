@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror")
 
 set(CLIENT_TARGET client)
 set(SERVER_TARGET server)
+set(TEST_TARGET runtest)
 
 set(CLIENT_SOURCES src/client/client.cpp)
 set(SERVER_SOURCES src/server/server.cpp src/server/pars_line.cpp)
@@ -31,3 +32,11 @@ set(FILES_TO_CHECK
   )
 set(CPPCHEK_ARGS --enable=all --inconclusive --std=c++11)
 include(cppcheck.cmake)
+
+add_executable(${TEST_TARGET}
+  src/test/test.cpp
+  src/test/catch.hpp
+  src/server/pars_line.h
+  src/server/pars_line.cpp
+  )
+target_include_directories(${TEST_TARGET} PRIVATE src/server)
