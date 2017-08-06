@@ -106,7 +106,7 @@ int execute_command(std::array<char, 1000> prog_name,
     dup2(client_socket, 1);
     int ret;
     if (prog_key[0] == '\0') {
-      ret = execlp(prog_name.data(), prog_name.data(), NULL, NULL);
+      ret = execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
       if (ret == -1) {
         std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
         close(client_socket);
