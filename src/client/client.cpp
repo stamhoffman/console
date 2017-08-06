@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
     close(sock_dsc);
   }
 
-  std::array<char, 1000> send_buff = {'\0'};
-  std::array<char, 1000> read_buff = {'\0'};
+  std::array<char, 1000> send_buff = {{'\0'}};
+  std::array<char, 1000> read_buff = {{'\0'}};
 
   while (1) {
     std::cin.getline(send_buff.data(), 1000);
