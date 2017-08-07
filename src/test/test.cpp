@@ -5,51 +5,50 @@
 
 #include "pars_line.h"
 
-TEST_CASE("pars_line works with nullptrs")
+TEST_CASE("pars_line works properly", "[pars_line]")
 {
-  REQUIRE(-1 == pars_line(nullptr, nullptr, nullptr));
-}
+  using Buff = std::array<char, 1000>;
 
-TEST_CASE("pars_line works with zero input")
-{
-  std::array<char, 1000> user_input;
-  std::array<char, 1000> file;
-  std::array<char, 1000> arg;
+  Buff user_input;
+  Buff file;
+  Buff arg;
 
-  REQUIRE(0 == pars_line(&user_input, &file, &arg));
-  REQUIRE((std::array<char, 1000>{} == file));
-  REQUIRE((std::array<char, 1000>{} == arg));
-}
+  SECTION("arguments are nullptrs")
+  {
+    REQUIRE(-1 == pars_line(nullptr, nullptr, nullptr));
+  }
 
-TEST_CASE("pars_line works with simple command")
-{
-  std::array<char, 1000> user_input = {"ls"};
-  std::array<char, 1000> file;
-  std::array<char, 1000> arg;
+  SECTION("zero input")
+  {
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
+    REQUIRE(Buff{} == file);
+    REQUIRE(Buff{} == arg);
+  }
 
-  REQUIRE(0 == pars_line(&user_input, &file, &arg));
-  REQUIRE((std::array<char, 1000>{"ls"} == file));
-  REQUIRE((std::array<char, 1000>{} == arg));
-}
+  SECTION("command without arguments")
+  {
+    user_input = {"ls"};
 
-TEST_CASE("pars_line works with command and arg")
-{
-  std::array<char, 1000> user_input = {"ls -la"};
-  std::array<char, 1000> file;
-  std::array<char, 1000> arg;
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
+    REQUIRE(Buff{"ls"} == file);
+    REQUIRE(Buff{} == arg);
+  }
 
-  REQUIRE(1 == pars_line(&user_input, &file, &arg));
-  REQUIRE((std::array<char, 1000>{"ls"} == file));
-  REQUIRE((std::array<char, 1000>{"-la"} == arg));
-}
+  SECTION("command with argument")
+  {
+    user_input = {"ls -la"};
 
-TEST_CASE("pars_line works with command and arg with two space delimeter")
-{
-  std::array<char, 1000> user_input = {"ls  -la"};
-  std::array<char, 1000> file;
-  std::array<char, 1000> arg;
+    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(Buff{"ls"} == file);
+    REQUIRE(Buff{"-la"} == arg);
+  }
 
-  REQUIRE(1 == pars_line(&user_input, &file, &arg));
-  REQUIRE((std::array<char, 1000>{"ls"} == file));
-  REQUIRE((std::array<char, 1000>{"-la"} == arg));
+  SECTION("command with argument and two space delimeter")
+  {
+    user_input = {"ls  -la"};
+
+    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(Buff{"ls"} == file);
+    REQUIRE(Buff{"-la"} == arg);
+  }
 }
