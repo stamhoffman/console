@@ -104,4 +104,18 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     REQUIRE(result == file);
     REQUIRE(Buff{} == arg);
   }
+
+  SECTION("command and arg without null terminator")
+  {
+    user_input.fill('a');
+    user_input[1] = ' ';
+
+    Buff arg_result;
+    arg_result.fill('a');
+    arg_result[arg_result.size() - 2] = '\0';
+
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
+    REQUIRE(Buff{"a"} == file);
+    REQUIRE(arg_result == arg);
+  }
 }
