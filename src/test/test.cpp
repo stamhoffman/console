@@ -69,4 +69,17 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     REQUIRE(Buff{"ls"} == file);
     REQUIRE(Buff{"-la"} == arg);
   }
+
+  SECTION("command without null terminator")
+  {
+    user_input.fill('a');
+
+    Buff result;
+    result.fill('a');
+    result[result.size() - 1] = '\0';
+
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
+    REQUIRE(result == file);
+    REQUIRE(Buff{} == arg);
+  }
 }
