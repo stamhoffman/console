@@ -9,7 +9,6 @@ int execute_command(std::array<char, 1000> prog_name,
 int main(int argc, char **argv) {
 #define ps struct sockaddr
 
-
   int list_socket, client_socket;
 
   list_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -60,7 +59,7 @@ int main(int argc, char **argv) {
       std::cout << "Error fork()" << strerror(errno) << std::endl;
       close(client_socket);
       return -1;
-    } else if (p_pid == 0) { /* message */
+    } else if (p_pid == 0) {
       client_task(client_socket);
     }
   }
@@ -83,12 +82,14 @@ int client_task(int client_socket) {
     read_byte = read(client_socket, (void *)read_buff.data(), read_buff.size());
 
     if (read_byte > 1) {
-      pars_line(&read_buff, &prog_name, &prog_key);
-      execute_command(prog_name, prog_key, client_socket);
-    } else {
-      return -1;
+      if (pars_line(&read_buff, &prog_name, &prog_key) == -1) {
+        std::cout << "Ошибка:Команда не распознана" << '\n';
+      } else {
+        execute_command(prog_name, prog_key, client_socket);
+      }
     }
   }
+
   close(client_socket);
   return 0;
 }

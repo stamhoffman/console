@@ -1,8 +1,15 @@
+
 #include "config.h"
 
 int pars_line(std::array<char, 1000> *read_buff,
               std::array<char, 1000> *prog_name,
               std::array<char, 1000> *prog_key) {
+
+  if(read_buff == nullptr || prog_name == nullptr || prog_key == nullptr){
+    std::cout << "Ошибка: Функция приняла nullptr" << '\n';
+    return -1;
+  }
+
   int count = 0;
   std::cout << "pars_line start(" << count << ")" << '\n';
   const char space = ' ';
@@ -19,6 +26,8 @@ int pars_line(std::array<char, 1000> *read_buff,
 
   if (rb_itr != std::end(*read_buff)) {
     std::copy(rb_itr + 1, (*read_buff).end(), key_itr);
+    return 1;
   }
-  return 1;
+
+  return 0;
 }
