@@ -5,5 +5,5 @@
 
 TEST_CASE("pars_line works with nullptrs")
 {
-  REQUIRE(1 == pars_line(nullptr, nullptr, nullptr));
+  REQUIRE(-1 == pars_line(nullptr, nullptr, nullptr));
 }
