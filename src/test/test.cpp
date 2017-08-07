@@ -51,4 +51,22 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     REQUIRE(Buff{"ls"} == file);
     REQUIRE(Buff{"-la"} == arg);
   }
+
+  SECTION("command with argument and tab delimeter")
+  {
+    user_input = {"ls\t-la"};
+
+    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(Buff{"ls"} == file);
+    REQUIRE(Buff{"-la"} == arg);
+  }
+
+  SECTION("command with argument and tabs spaces delimeter")
+  {
+    user_input = {"ls\t \t   \t   -la"};
+
+    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(Buff{"ls"} == file);
+    REQUIRE(Buff{"-la"} == arg);
+  }
 }
