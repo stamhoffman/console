@@ -1,109 +1,108 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "pars_line.h"
-#include <array>
 
-TEST_CASE("pars_line works properly", "[pars_line]") {
+#include <array>
+#include <algorithm>
+
+#include "pars_line.h"
+
+TEST_CASE("pars_line works properly", "[pars_line]")
+{
   using Buff = std::array<char, 1000>;
 
   Buff user_input;
   Buff file;
   Buff arg;
+  char file_ls[] = "ls";
+  char arg_la[] = "-la";
 
-  SECTION("arguments are nullptrs") {
+  SECTION("arguments are nullptrs")
+  {
     REQUIRE(-1 == pars_line(nullptr, nullptr, nullptr));
   }
 
-  SECTION("zero input") {
+  SECTION("zero input")
+  {
     REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{} == file);
     REQUIRE(Buff{} == arg);
   }
 
-  SECTION("command without arguments") {
-    user_input = {'l', 's'};
+  SECTION("command without arguments")
+  {
+    user_input = Buff{"ls"};
 
     REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(Buff{} == arg);
   }
 
-  SECTION("command with argument") {
-    user_input = {'l', 's', ' ', '-', 'l', 'a'};
+  SECTION("command with argument")
+  {
+    user_input = Buff{"ls -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
-  SECTION("command with argument and two space delimeter") {
-    user_input = {'l', 's', ' ', ' ', '-', 'l', 'a'};
+  SECTION("command with argument and two space delimeter")
+  {
+    user_input = Buff{"ls  -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
-  SECTION("command with argument and tab delimeter") {
-    user_input = {'l', 's', '\t', '-', 'l', 'a'};
+  SECTION("command with argument and tab delimeter")
+  {
+    user_input = Buff{"ls\t-la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
-  SECTION("command with argument and tabs spaces delimeter") {
-    user_input = {'l',  's', '\t', ' ', '\t', ' ', ' ', ' ',
-                  '\t', ' ', ' ',  ' ', '-',  'l', 'a'};
+  SECTION("command with argument and tabs spaces delimeter")
+  {
+    user_input = Buff{"ls\t \t   \t   -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
-  SECTION("command with argument and tail") {
-    user_input = {'l',  's', ' ', '-', 'l',  'a', '\t', ' ', ' ', ' ',
-                  '\t', ' ', ' ', ' ', '\t', ' ', ' ',  ' ', ' '};
+  SECTION("command with argument and tail")
+  {
+    user_input = Buff{"ls -la\t   \t   \t    "};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
-  SECTION("command without null terminator") {
+  SECTION("command with argument and head spaces")
+  {
+    user_input = Buff{"\t     \tls -la"};
+
+    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
+  }
+
+  SECTION("command without null terminator")
+  {
     user_input.fill('a');
 
-    Buff result;
-    result.fill('a');
-    result[result.size() - 1] = '\0';
-
-    REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(result == file);
-    REQUIRE(Buff{} == arg);
+    REQUIRE(-1 == pars_line(&user_input, &file, &arg));
   }
 
-  SECTION("command without null terminator") {
-    user_input.fill('a');
-
-    Buff result;
-    result.fill('a');
-    result[result.size() - 1] = '\0';
-
-    REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(result == file);
-    REQUIRE(Buff{} == arg);
-  }
-
-  SECTION("command and arg without null terminator") {
+  SECTION("command and arg without null terminator")
+  {
     user_input.fill('a');
     user_input[1] = ' ';
 
-    Buff arg_result;
-    arg_result.fill('a');
-    arg_result[arg_result.size() - 2] = '\0';
-
-    REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"a"} == file);
-    REQUIRE(arg_result == arg);
+    REQUIRE(-1 == pars_line(&user_input, &file, &arg));
   }
 }
