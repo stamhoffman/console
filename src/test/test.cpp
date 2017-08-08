@@ -27,7 +27,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
 
   SECTION("command without arguments")
   {
-    user_input = {"ls"};
+    user_input = Buff{"ls"};
 
     REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{"ls"} == file);
@@ -36,7 +36,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
 
   SECTION("command with argument")
   {
-    user_input = {"ls -la"};
+    user_input = Buff{"ls -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{"ls"} == file);
@@ -45,7 +45,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
 
   SECTION("command with argument and two space delimeter")
   {
-    user_input = {"ls  -la"};
+    user_input = Buff{"ls  -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{"ls"} == file);
@@ -54,7 +54,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
 
   SECTION("command with argument and tab delimeter")
   {
-    user_input = {"ls\t-la"};
+    user_input = Buff{"ls\t-la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{"ls"} == file);
@@ -63,7 +63,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
 
   SECTION("command with argument and tabs spaces delimeter")
   {
-    user_input = {"ls\t \t   \t   -la"};
+    user_input = Buff{"ls\t \t   \t   -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{"ls"} == file);
@@ -72,7 +72,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
 
   SECTION("command with argument and tail")
   {
-    user_input = {"ls -la\t   \t   \t    "};
+    user_input = Buff{"ls -la\t   \t   \t    "};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{"ls"} == file);
