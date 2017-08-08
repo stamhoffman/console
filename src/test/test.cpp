@@ -2,6 +2,7 @@
 #include "catch.hpp"
 
 #include <array>
+#include <algorithm>
 
 #include "pars_line.h"
 
@@ -12,6 +13,8 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   Buff user_input;
   Buff file;
   Buff arg;
+  char file_ls[] = "ls";
+  char arg_la[] = "-la";
 
   SECTION("arguments are nullptrs")
   {
@@ -30,7 +33,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     user_input = Buff{"ls"};
 
     REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(Buff{} == arg);
   }
 
@@ -39,8 +42,8 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     user_input = Buff{"ls -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
   SECTION("command with argument and two space delimeter")
@@ -48,8 +51,8 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     user_input = Buff{"ls  -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
   SECTION("command with argument and tab delimeter")
@@ -57,8 +60,8 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     user_input = Buff{"ls\t-la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
   SECTION("command with argument and tabs spaces delimeter")
@@ -66,8 +69,8 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     user_input = Buff{"ls\t \t   \t   -la"};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
   SECTION("command with argument and tail")
@@ -75,34 +78,24 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     user_input = Buff{"ls -la\t   \t   \t    "};
 
     REQUIRE(1 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"ls"} == file);
-    REQUIRE(Buff{"-la"} == arg);
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
+  }
+
+  SECTION("command with argument and head spaces")
+  {
+    user_input = Buff{"\t     \tls -la"};
+
+    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
+    REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
 
   SECTION("command without null terminator")
   {
     user_input.fill('a');
 
-    Buff result;
-    result.fill('a');
-    result[result.size() - 1] = '\0';
-
-    REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(result == file);
-    REQUIRE(Buff{} == arg);
-  }
-
-  SECTION("command without null terminator")
-  {
-    user_input.fill('a');
-
-    Buff result;
-    result.fill('a');
-    result[result.size() - 1] = '\0';
-
-    REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(result == file);
-    REQUIRE(Buff{} == arg);
+    REQUIRE(-1 == pars_line(&user_input, &file, &arg));
   }
 
   SECTION("command and arg without null terminator")
@@ -110,12 +103,6 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     user_input.fill('a');
     user_input[1] = ' ';
 
-    Buff arg_result;
-    arg_result.fill('a');
-    arg_result[arg_result.size() - 2] = '\0';
-
-    REQUIRE(0 == pars_line(&user_input, &file, &arg));
-    REQUIRE(Buff{"a"} == file);
-    REQUIRE(arg_result == arg);
+    REQUIRE(-1 == pars_line(&user_input, &file, &arg));
   }
 }
