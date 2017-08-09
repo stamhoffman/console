@@ -13,8 +13,6 @@ int pars_line(std::array<char, 1000> *read_buff,
   int count = 0;
   std::cout << "pars_line start(" << count << ")" << '\n';
   const char space = ' ';
-  std::fill(std::begin(*prog_key), std::end(*prog_key), '\0');
-  std::fill(std::begin(*prog_name), std::end(*prog_name), '\0');
 
   std::array<char, 1000>::iterator rb_itr = (*read_buff).begin();
   std::array<char, 1000>::iterator pn_itr = (*prog_name).begin();
