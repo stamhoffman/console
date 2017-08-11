@@ -15,9 +15,9 @@ int pars_line(std::array<char, 1000> *read_buff,
 
   const char dash = '-';
 
-  std::array<char, 1000> symbol = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n',
-  'o','p','q','r','s','t','u','v','w','x','y','z'};
-  std::array<char, 1000> end_symbol = {' ', '\0', '\t'};
+  std::array<char, 1000> symbol = {{'a','b','c','d','e','f','g','h','i','j','k','l','m','n',
+  'o','p','q','r','s','t','u','v','w','x','y','z'}};
+  std::array<char, 1000> end_symbol = {{' ', '\0', '\t'}};
 
   std::array<char, 1000>::iterator start_itr = (*read_buff).begin();
   std::array<char, 1000>::iterator end_itr = (*read_buff).begin();
