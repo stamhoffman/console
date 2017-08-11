@@ -15,7 +15,7 @@
 
 int main(int argc, char **argv) {
 #define pointer_addr const struct sockaddr
-  const int PORT = 54322;
+  const int PORT = 54321;
 
   if (argc < 2) {
     std::cout << "Ошибка в формате команды, не введен адрес сервера \n";

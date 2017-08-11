@@ -113,6 +113,7 @@ int execute_command(std::array<char, 1000> prog_name,
         close(client_socket);
         return 0;
       }
+
     } else {
       ret = execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
       if (ret == -1) {
@@ -120,6 +121,7 @@ int execute_command(std::array<char, 1000> prog_name,
         close(client_socket);
         return 0;
       }
+
     }
   }
   return 1;
