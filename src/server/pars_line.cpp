@@ -34,6 +34,8 @@ int pars_line(std::array<char, 1000> *read_buff,
   end_itr = std::find_first_of(start_itr, (*read_buff).end(), end_symbol.begin(), end_symbol.end());
 
   if(end_itr == std::end(*read_buff)){
+    *prog_name = {};
+    *prog_key = {};
     return -1;
   }
   else{
@@ -44,6 +46,9 @@ int pars_line(std::array<char, 1000> *read_buff,
     *prog_key = {};
     return 0;
   }
+  else{
+      (*end_itr) = '\0';
+  }
 
   start_itr = std::find(end_itr, std::end(*read_buff), dash);
   if(start_itr == std::end(*read_buff)){
@@ -52,11 +57,8 @@ int pars_line(std::array<char, 1000> *read_buff,
   }
 
   end_itr = std::find_first_of(start_itr, (*read_buff).end(), end_symbol.begin(), end_symbol.end());
-  if(end_itr == std::end(*read_buff)){
-    return -1;
-  }
-  else{
+  {
     std::copy(start_itr, end_itr, key_itr);
+    return 0;
   }
-  return 0;
 }
