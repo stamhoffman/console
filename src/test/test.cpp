@@ -13,6 +13,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   Buff user_input;
   Buff file;
   Buff arg;
+
   char file_ls[] = "ls";
   char arg_la[] = "-la";
 
