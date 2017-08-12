@@ -23,7 +23,9 @@ TEST_CASE("pars_line works properly", "[pars_line]")
 
   SECTION("zero input")
   {
-    REQUIRE(0 == pars_line(&user_input, &file, &arg));
+    user_input[0] = '\0';
+
+    REQUIRE(-1 == pars_line(&user_input, &file, &arg));
     REQUIRE(Buff{} == file);
     REQUIRE(Buff{} == arg);
   }
@@ -41,7 +43,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   {
     user_input = Buff{"ls -la"};
 
-    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
@@ -50,7 +52,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   {
     user_input = Buff{"ls  -la"};
 
-    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
@@ -59,7 +61,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   {
     user_input = Buff{"ls\t-la"};
 
-    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
@@ -68,7 +70,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   {
     user_input = Buff{"ls\t \t   \t   -la"};
 
-    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
@@ -77,7 +79,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   {
     user_input = Buff{"ls -la\t   \t   \t    "};
 
-    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
@@ -86,7 +88,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   {
     user_input = Buff{"\t     \tls -la"};
 
-    REQUIRE(1 == pars_line(&user_input, &file, &arg));
+    REQUIRE(0 == pars_line(&user_input, &file, &arg));
     REQUIRE(std::equal(std::begin(file_ls), std::end(file_ls), file.begin()));
     REQUIRE(std::equal(std::begin(arg_la), std::end(arg_la), arg.begin()));
   }
