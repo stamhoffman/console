@@ -5,12 +5,8 @@ int pars_line(std::array<char, 1000> *read_buff,
               std::array<char, 1000> *prog_key) {
 
   if (read_buff == nullptr || prog_name == nullptr || prog_key == nullptr) {
-    std::cout << "Ошибка: Функция приняла nullptr" << '\n';
     return -1;
   }
-
-  int count = 0;
-  std::cout << "pars_line start(" << count << ")" << '\n';
 
   const char dash = '-';
 
