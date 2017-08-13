@@ -18,37 +18,37 @@ int pars_line(std::array<char, 1000> *read_buff,
   *prog_name = {};
   *prog_key = {};
 
-  std::array<char, 1000>::iterator start_itr = (*read_buff).begin();
-  std::array<char, 1000>::iterator end_itr = (*read_buff).begin();
-  std::array<char, 1000>::iterator pn_itr = (*prog_name).begin();
-  std::array<char, 1000>::iterator key_itr = (*prog_key).begin();
+  std::array<char, 1000>::iterator start_itr = read_buff->begin();
+  std::array<char, 1000>::iterator end_itr = read_buff->begin();
+  std::array<char, 1000>::iterator pn_itr = prog_name->begin();
+  std::array<char, 1000>::iterator key_itr = prog_key->begin();
 
-  if ((*read_buff).empty()) {
+  if (read_buff->empty()) {
     *prog_name = {};
     *prog_key = {};
     return -1;
   }
 
-  start_itr = std::find(end_itr, std::end(*read_buff), '\0');
+  start_itr = std::find(end_itr, read_buff->end(), '\0');
 
-  if (start_itr == (*read_buff).begin()) {
+  if (start_itr == (read_buff->begin())) {
     *prog_name = {};
     *prog_key = {};
     return -1;
   }
 
-  start_itr = std::find_first_of((*read_buff).begin(), (*read_buff).end(),
+  start_itr = std::find_first_of(read_buff->begin(), read_buff->end(),
                                  symbol.begin(), symbol.end());
-  if (start_itr == std::end(*read_buff)) {
+  if (start_itr == read_buff->end()) {
     *prog_name = {};
     *prog_key = {};
     return -1;
   }
 
-  end_itr = std::find_first_of(start_itr, (*read_buff).end(),
-                               end_symbol.begin(), end_symbol.end());
+  end_itr = std::find_first_of(start_itr, read_buff->end(), end_symbol.begin(),
+                               end_symbol.end());
 
-  if (end_itr == std::end(*read_buff)) {
+  if (end_itr == (read_buff->end())) {
     *prog_name = {};
     *prog_key = {};
     return -1;
@@ -70,14 +70,14 @@ int pars_line(std::array<char, 1000> *read_buff,
     (*end_itr) = '\0';
   }
 
-  start_itr = std::find(end_itr, std::end(*read_buff), dash);
-  if (start_itr == std::end(*read_buff)) {
+  start_itr = std::find(end_itr, read_buff->end(), dash);
+  if (start_itr == (read_buff->end())) {
     *prog_key = {};
     return -1;
   }
 
-  end_itr = std::find_first_of(start_itr, (*read_buff).end(),
-                               end_symbol.begin(), end_symbol.end());
+  end_itr = std::find_first_of(start_itr, read_buff->end(), end_symbol.begin(),
+                               end_symbol.end());
   {
     std::copy(start_itr, end_itr, key_itr);
     int count;
