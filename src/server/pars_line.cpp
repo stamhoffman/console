@@ -8,8 +8,6 @@ int pars_line(std::array<char, 1000> *read_buff,
     return -1;
   }
 
-  const char dash = '-';
-
   std::array<char, 1000> symbol = {{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
                                     'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
                                     's', 't', 'u', 'v', 'w', 'x', 'y', 'z'}};
@@ -66,19 +64,29 @@ int pars_line(std::array<char, 1000> *read_buff,
     } else {
       return 0;
     }
-  } else {
-    (*end_itr) = '\0';
   }
 
-  start_itr = std::find(end_itr, read_buff->end(), dash);
-  if (start_itr == (read_buff->end())) {
+  while((*end_itr == ' ') || (*end_itr == '\t')){
+    end_itr++;
+  }
+
+  if (end_itr == (read_buff->end())) {
     *prog_key = {};
     return -1;
   }
 
-  end_itr = std::find_first_of(start_itr, read_buff->end(), end_symbol.begin(),
-                               end_symbol.end());
+  if (((*end_itr) == '\0')) {
+    *prog_key = {};
+    return 0;
+  }
+
+  start_itr = end_itr;
+
+  end_itr = std::find_first_of(start_itr, read_buff->end(), end_symbol.begin(), end_symbol.end());
   {
+    if(end_itr == read_buff->end()){
+      return -1;
+    }
     std::copy(start_itr, end_itr, key_itr);
     int count;
     for (count = 0; (*prog_name)[count] != '\0'; count++)
