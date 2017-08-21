@@ -14,8 +14,8 @@ int pars_line(std::array<char, 1000> *read_buff,
   std::array<char, 1000>::iterator key_itr = prog_key->begin();
 
   if (*start_itr == '\0') {
-    prog_key -> fill('\0');
-    prog_name -> fill('\0');
+    prog_key->fill('\0');
+    prog_name->fill('\0');
     return -1;
   }
 
@@ -38,16 +38,16 @@ int pars_line(std::array<char, 1000> *read_buff,
   }
 
   if (end_itr == (read_buff->end())) {
-  return -1;
+    return -1;
   }
 
   if (*end_itr == '\0') {
-    pn_itr = std::copy(start_itr, end_itr , pn_itr);
+    pn_itr = std::copy(start_itr, end_itr, pn_itr);
     *pn_itr = '\0';
-    prog_key -> fill('\0');
+    prog_key->fill('\0');
     return 0;
   } else {
-    pn_itr = std::copy(start_itr, end_itr , pn_itr);
+    pn_itr = std::copy(start_itr, end_itr, pn_itr);
     *pn_itr = '\0';
   }
 
@@ -57,17 +57,17 @@ int pars_line(std::array<char, 1000> *read_buff,
     start_itr++;
   }
   if (start_itr == (read_buff->end())) {
-  return -1;
+    return -1;
   }
 
-  end_itr  = start_itr;
+  end_itr = start_itr;
 
   while (std::isgraph(*end_itr) != 0) {
     end_itr++;
   }
 
   if (*end_itr == '\0') {
-    key_itr = std::copy(start_itr, end_itr , key_itr);
+    key_itr = std::copy(start_itr, end_itr, key_itr);
     *key_itr = '\0';
     return 0;
   } else {
