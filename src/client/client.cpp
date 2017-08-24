@@ -15,7 +15,7 @@
 
 int main(int argc, char **argv) {
 #define pointer_addr const struct sockaddr
-#define PORT 54321
+  const int PORT = 54321;
 
   if (argc < 2) {
     std::cout << "Ошибка в формате команды, не введен адрес сервера \n";
@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
 
   if (sock_dsc == -1) {
     std::cout << "Error socket():" << strerror(errno) << std::endl;
+    close(sock_dsc);
     return -1;
   }
 
@@ -45,26 +46,42 @@ int main(int argc, char **argv) {
 
   if (inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) == -1) {
     std::cout << "Error inet_pton():" << strerror(errno) << std::endl;
+    close(sock_dsc);
     return -1;
   }
 
   if (connect(sock_dsc, (pointer_addr *)&serv_addr, sizeof(serv_addr)) == -1) {
     std::cout << "Error connect:" << strerror(errno) << std::endl;
+    return -1;
+    close(sock_dsc);
   }
 
-  std::array<char, 1024> send_buff = {'\0'};
-  std::array<char, 1024> read_buff = {'\0'};
+  std::array<char, 1000> send_buff = {{'\0'}};
+  std::array<char, 1000> read_buff = {{'\0'}};
 
   while (1) {
-    std::cin >> send_buff.data();
-    send(sock_dsc, (const void *)send_buff.data(), send_buff.size(), 0);
-    send_buff = {'\0'};
+    std::cin.getline(send_buff.data(), 1000);
+    int ret_send;
+    ret_send =
+        send(sock_dsc, (const void *)send_buff.data(), send_buff.size(), 0);
+    if (ret_send == -1) {
+      std::cout << "Error send():" << strerror(errno) << std::endl;
+    }
 
-    while (read(sock_dsc, (void *)read_buff.data(), read_buff.size()) < 0)
-      ;
-    std::cout << "ECHO:" << read_buff.data() << std::endl;
-    read_buff = {'\0'};
+    int read_byte = 0;
+    int count = 0;
+
+    read_byte = read(sock_dsc, (void *)read_buff.data(), read_buff.size());
+    if (read_byte > 1) {
+      std::cout << "server(" << count << "):" << '\n'
+                << read_buff.data() << '\n';
+      std::cout << "---------------------------------------------------"
+                << '\n';
+    } else {
+      std::cout << "Error read():" << strerror(errno) << std::endl;
+    }
   }
 
+  close(sock_dsc);
   return 0;
 }

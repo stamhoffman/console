@@ -1,27 +1,18 @@
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
 
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include "config.h"
 
-#include <array>
-#include <iostream>
-
-#include <thread>
+int execute_command(std::array<char, 1000> prog_name,
+                    std::array<char, 1000> prog_key, int client_socket);
 
 int client_task(int client_socket);
 int main(int argc, char **argv) {
 #define ps struct sockaddr
-#define PORT 54321
 
   int list_socket, client_socket;
 
   list_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (list_socket == -1) {
-    printf("Error socket():%s\n", strerror(errno));
+    std::cout << "Error socket():" << strerror(errno) << "\n";
     return -1;
   }
 
@@ -35,49 +26,102 @@ int main(int argc, char **argv) {
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if ((bind(list_socket, (ps *)&serv_addr, sizeof(serv_addr))) == -1) {
-    printf("Error bind():%s\n", strerror(errno));
+    std::cout << "Error bind():" << strerror(errno) << "\n";
+    close(list_socket);
     return -1;
   }
 
   if ((listen(list_socket, 3)) == -1) {
-    printf("Error listen()%s\n", strerror(errno));
+    std::cout << "Error listen():" << strerror(errno) << "\n";
+    close(list_socket);
+    return -1;
   }
 
   while (1) {
     socklen_t length = sizeof(client_addr);
-
+    std::cout << "start accept" << '\n';
     client_socket = accept(list_socket, (ps *)&client_addr, &length);
     if (client_socket == -1) {
-      printf("Errorr accept():%s\n", strerror(errno));
+      std::cout << "Errorr accept():" << strerror(errno) << "\n";
+      close(list_socket);
+      return -1;
     }
 
     char addr_clients[INET_ADDRSTRLEN];
 
     inet_ntop(AF_INET, &(client_addr.sin_addr), addr_clients, INET_ADDRSTRLEN);
-    printf("connection from: %s\n", addr_clients);
-    std::thread new_client(client_task, client_socket);
-    new_client.detach();
+    std::cout << "connection from:" << addr_clients << "\n";
+
+    int p_pid;
+    p_pid = fork();
+    if (p_pid == -1) {
+      std::cout << "Error fork()" << strerror(errno) << std::endl;
+      close(client_socket);
+      return -1;
+    } else if (p_pid == 0) {
+      client_task(client_socket);
+    }
   }
 
   close(list_socket);
+  return 1;
+}
+
+int client_task(int client_socket) {
+  int count = 0;
+  std::cout << "client start(" << count << ")" << '\n';
+
+  int read_byte = 0;
+  std::array<char, 1000> read_buff = {{'\0'}};
+  std::array<char, 1000> prog_name = {{'\0'}};
+  std::array<char, 1000> prog_key = {{'\0'}};
+
+  while (1) {
+    read_byte = 0;
+    read_byte = read(client_socket, (void *)read_buff.data(), read_buff.size());
+
+    if (read_byte > 1) {
+      if (pars_line(&read_buff, &prog_name, &prog_key) == -1) {
+        std::cout << "Ошибка:Команда не распознана" << '\n';
+      } else {
+        execute_command(prog_name, prog_key, client_socket);
+      }
+    }
+  }
+
   close(client_socket);
   return 0;
 }
 
-int client_task(int client_sock) {
+int execute_command(std::array<char, 1000> prog_name,
+                    std::array<char, 1000> prog_key, int client_socket) {
+  int count = 0;
+  std::cout << "execute_command start(" << count << ")" << '\n';
+  int p_pid;
+  p_pid = fork();
+  if (p_pid == -1) {
+    std::cout << "Error fork()" << strerror(errno) << std::endl;
+    return -1;
+  } else if (p_pid == 0) {
+    dup2(client_socket, 1);
+    int ret;
+    if (prog_key[0] == '\0') {
+      ret = execlp(prog_name.data(), prog_name.data(), NULL);
+      if (ret == -1) {
+        std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
+        close(client_socket);
+        return 0;
+      }
 
-  std::array<char, 1024> read_buff = {'\0'};
-  std::array<char, 1024> send_buff = {'\0'};
+    } else {
+      ret = execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
+      if (ret == -1) {
+        std::cout << "Error execlp(2)" << strerror(errno) << std::endl;
+        close(client_socket);
+        return 0;
+      }
 
-  while (read(client_sock, (void *)read_buff.data(), read_buff.size()) > 0) {
-    send_buff = read_buff;
-    send(client_sock, (const void *)send_buff.data(), send_buff.size(), 0);
-    for (auto arr : read_buff) {
-      std::cout << arr;
     }
-    std::cout << std::endl;
-    read_buff = {'\0'};
   }
-  close(client_sock);
-  return 0;
+  return 1;
 }
