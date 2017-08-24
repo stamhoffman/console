@@ -2,7 +2,7 @@
 
 int find_data(std::array<char, 1000>::iterator &start_itr,
               std::array<char, 1000>::iterator &end_itr,
-              std::array<char, 1000>:: iterator &data);
+              std::array<char, 1000>::iterator &data);
 
 int pars_line(std::array<char, 1000> *read_buff,
               std::array<char, 1000> *prog_name,
@@ -38,10 +38,12 @@ int pars_line(std::array<char, 1000> *read_buff,
   prog_key->fill('\0');
 
   ret_find = find_data(start_itr, end_itr, pn_itr);
-  if (ret_find == 0) return ret_find;
+  if (ret_find == 0)
+    return ret_find;
 
   ret_find = find_data(start_itr, end_itr, key_itr);
-  if (ret_find == 1) ret_find = ret_find - 1;
+  if (ret_find == 1)
+    ret_find = ret_find - 1;
   return ret_find;
 }
 
