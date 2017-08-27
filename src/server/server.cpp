@@ -72,14 +72,13 @@ int client_task(int client_socket) {
   std::cout << "client start(" << count << ")" << '\n';
 
   int read_byte = 0;
-  std::vector<char> read_buff = {{'\0'}};
-  std::vector<char> prog_name = {{'\0'}};
-  std::vector<char> prog_key = {{'\0'}};
+  std::vector<char> read_buff(1000);
+  std::vector<char> prog_name(1000);
+  std::vector<char> prog_key(1000);
 
   while (1) {
     read_byte = 0;
     read_byte = read(client_socket, (void *)read_buff.data(), read_buff.size());
-
     if (read_byte > 1) {
       if (pars_line(&read_buff, &prog_name, &prog_key) == -1) {
         std::cout << "Ошибка:Команда не распознана" << '\n';

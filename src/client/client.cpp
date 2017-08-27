@@ -1,21 +1,7 @@
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
-
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <array>
-#include <iostream>
-#include <string>
-
-#include <thread>
+#include "config.h"
 
 int main(int argc, char **argv) {
 #define pointer_addr const struct sockaddr
-  const int PORT = 54321;
 
   if (argc < 2) {
     std::cout << "Ошибка в формате команды, не введен адрес сервера \n";
@@ -56,8 +42,8 @@ int main(int argc, char **argv) {
     close(sock_dsc);
   }
 
-  std::array<char, 1000> send_buff = {{'\0'}};
-  std::array<char, 1000> read_buff = {{'\0'}};
+  std::vector<char> send_buff(1000);
+  std::vector<char> read_buff(1000);
 
   while (1) {
     std::cin.getline(send_buff.data(), 1000);
