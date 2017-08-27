@@ -1,8 +1,8 @@
 
 #include "config.h"
 
-int execute_command(std::array<char, 1000> prog_name,
-                    std::array<char, 1000> prog_key, int client_socket);
+int execute_command(std::vector<char> prog_name,
+                    std::vector<char> prog_key, int client_socket);
 
 int client_task(int client_socket);
 int main(int argc, char **argv) {
@@ -72,9 +72,9 @@ int client_task(int client_socket) {
   std::cout << "client start(" << count << ")" << '\n';
 
   int read_byte = 0;
-  std::array<char, 1000> read_buff = {{'\0'}};
-  std::array<char, 1000> prog_name = {{'\0'}};
-  std::array<char, 1000> prog_key = {{'\0'}};
+  std::vector<char> read_buff = {{'\0'}};
+  std::vector<char> prog_name = {{'\0'}};
+  std::vector<char> prog_key = {{'\0'}};
 
   while (1) {
     read_byte = 0;
@@ -93,8 +93,8 @@ int client_task(int client_socket) {
   return 0;
 }
 
-int execute_command(std::array<char, 1000> prog_name,
-                    std::array<char, 1000> prog_key, int client_socket) {
+int execute_command(std::vector<char> prog_name,
+                    std::vector<char> prog_key, int client_socket) {
   int count = 0;
   std::cout << "execute_command start(" << count << ")" << '\n';
   int p_pid;

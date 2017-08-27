@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include <array>
+#include <vector>
 #include <iostream>
 
 #include <thread>

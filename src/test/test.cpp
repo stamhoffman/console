@@ -2,13 +2,14 @@
 #include "catch.hpp"
 
 #include <array>
+#include <vector>
 #include <algorithm>
 
 #include "pars_line.h"
 
 TEST_CASE("pars_line works properly", "[pars_line]")
 {
-  using Buff = std::array<char, 1000>;
+  using Buff = std::vector<char>;
 
   Buff user_input;
   Buff file;
