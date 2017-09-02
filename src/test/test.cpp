@@ -8,6 +8,40 @@
 
 TEST_CASE("pars_line works properly", "[pars_line]")
 {
+
+  using Buff = std::array<char, 1000>;
+  using POINTER = std::vector<char *>;
+
+  Buff user_input;
+  POINTER pointer;
+  char prog_name[] = "ls";
+  char options[] = "-l";
+  char options_0[] = "-a";
+
+
+  SECTION("command without arguments")
+  {
+    user_input = Buff{"ls"};
+    pointer = pars_line(user_input);
+    REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
+  }
+
+  SECTION("command without arguments")
+  {
+    user_input = Buff{"ls -l"};
+    pointer = pars_line(user_input);
+    REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
+    REQUIRE(std::equal(std::begin(options), std::end(options), pointer[1]));
+  }
+
+  SECTION("command without arguments")
+  {
+    user_input = Buff{"ls -l -a"};
+    pointer = pars_line(user_input);
+    REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
+    REQUIRE(std::equal(std::begin(options_0), std::end(options_0), pointer[2]));
+  }
+
   /*
   using Buff = std::array<char, 1000>;
 

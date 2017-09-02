@@ -120,7 +120,6 @@ int execute_command(std::array<char, 1000> prog_name,
         close(client_socket);
         return 0;
       }
-
     }
   }
   return 1;
