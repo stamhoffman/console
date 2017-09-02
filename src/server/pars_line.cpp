@@ -18,20 +18,22 @@ int pars_line(std::vector<char> *read_buff, std::vector<char> *prog_name,
   std::vector<char>::iterator pn_itr = prog_name->begin();
   std::vector<char>::iterator key_itr = prog_key->begin();
 
-  if (*start_itr == '\0') {
-    prog_key->front() = ('\0');
-    prog_name->front() = ('\0');
+  if (read_buff -> at(0) == '\0') {
+    std::fill(prog_name -> begin(), prog_name -> end(), '\0');
+    std::fill(prog_key -> begin(), prog_key -> end(), '\0');
     return -1;
   }
 
   if (*start_itr == '\n') {
-    prog_key->front() = ('\0');
-    prog_name->front() = ('\0');
+    std::fill(prog_name -> begin(), prog_name -> end(), '\0');
+    std::fill(prog_key -> begin(), prog_key -> end(), '\0');
     return -1;
   }
 
   end_itr = std::find(read_buff->begin(), read_buff->end(), '\0');
   if (end_itr == read_buff->end()) {
+    std::fill(prog_name -> begin(), prog_name -> end(), '\0');
+    std::fill(prog_key -> begin(), prog_key -> end(), '\0');
     return -1;
   }
 
