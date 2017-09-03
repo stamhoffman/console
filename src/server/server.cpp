@@ -1,8 +1,7 @@
 
 #include "config.h"
 
-int execute_command(std::array<char, 1000> prog_name,
-                    std::array<char, 1000> prog_key, int client_socket);
+int execute_command(std::vector<char*> &user_string_pointer, int &client_socket);
 
 int client_task(int client_socket);
 int main(int argc, char **argv) {
@@ -53,14 +52,18 @@ int main(int argc, char **argv) {
     std::cout << "connection from:" << addr_clients << "\n";
 
     int p_pid;
+    int status;
     p_pid = fork();
     if (p_pid == -1) {
       std::cout << "Error fork()" << strerror(errno) << std::endl;
       close(client_socket);
-      return -1;
+      exit(1);
     } else if (p_pid == 0) {
       client_task(client_socket);
     }
+      else{
+        while (wait(& status) != p_pid);
+      }
   }
 
   close(list_socket);
@@ -72,20 +75,16 @@ int client_task(int client_socket) {
   std::cout << "client start(" << count << ")" << '\n';
 
   int read_byte = 0;
-  std::array<char, 1000> read_buff = {{'\0'}};
-  std::array<char, 1000> prog_name = {{'\0'}};
-  std::array<char, 1000> prog_key = {{'\0'}};
+  std::array<char, 1000> user_string = {{'\0'}};
+  std::vector<char *> user_string_pointer = {nullptr};
 
   while (1) {
     read_byte = 0;
-    read_byte = read(client_socket, (void *)read_buff.data(), read_buff.size());
+    read_byte = read(client_socket, (void *)user_string.data(), user_string.size());
 
     if (read_byte > 1) {
-      if (pars_line(&read_buff, &prog_name, &prog_key) == -1) {
-        std::cout << "Ошибка:Команда не распознана" << '\n';
-      } else {
-        execute_command(prog_name, prog_key, client_socket);
-      }
+      user_string_pointer = pars_line(user_string);
+      execute_command(user_string_pointer, client_socket);
     }
   }
 
@@ -93,8 +92,7 @@ int client_task(int client_socket) {
   return 0;
 }
 
-int execute_command(std::array<char, 1000> prog_name,
-                    std::array<char, 1000> prog_key, int client_socket) {
+int execute_command(std::vector<char*> &user_string_pointer, int &client_socket) {
   int count = 0;
   std::cout << "execute_command start(" << count << ")" << '\n';
   int p_pid;
@@ -102,25 +100,18 @@ int execute_command(std::array<char, 1000> prog_name,
   if (p_pid == -1) {
     std::cout << "Error fork()" << strerror(errno) << std::endl;
     return -1;
+    exit(1);
   } else if (p_pid == 0) {
     dup2(client_socket, 1);
     int ret;
-    if (prog_key[0] == '\0') {
-      ret = execlp(prog_name.data(), prog_name.data(), NULL);
-      if (ret == -1) {
-        std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
-        close(client_socket);
-        return 0;
-      }
-
-    } else {
-      ret = execlp(prog_name.data(), prog_name.data(), prog_key.data(), NULL);
-      if (ret == -1) {
-        std::cout << "Error execlp(2)" << strerror(errno) << std::endl;
-        close(client_socket);
-        return 0;
-      }
+    ret = execvp(user_string_pointer[0], (char *const *)&user_string_pointer[0]);
+    if (ret == -1) {
+    std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
+    close(client_socket);
+    exit(1);
+    return 0;
     }
   }
+
   return 1;
 }

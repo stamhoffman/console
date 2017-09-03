@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <array>
@@ -18,6 +19,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+
 
 #include "pars_line.h"
 
