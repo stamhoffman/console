@@ -1,7 +1,7 @@
 
 #include "config.h"
 
-int execute_command(std::vector<char*> &user_string_pointer, int &client_socket);
+int execute_command(std::vector<char*> &data_pointers, int &client_socket);
 
 int client_task(int client_socket);
 int main(int argc, char **argv) {
@@ -76,15 +76,15 @@ int client_task(int client_socket) {
 
   int read_byte = 0;
   std::array<char, 1000> user_string = {{'\0'}};
-  std::vector<char *> user_string_pointer = {nullptr};
+  std::vector<char *> data_pointers = {nullptr};
 
   while (1) {
     read_byte = 0;
     read_byte = read(client_socket, (void *)user_string.data(), user_string.size());
 
     if (read_byte > 1) {
-      user_string_pointer = pars_line(user_string);
-      execute_command(user_string_pointer, client_socket);
+      data_pointers = pars_line(user_string);
+      execute_command(data_pointers, client_socket);
     }
   }
 
@@ -92,7 +92,7 @@ int client_task(int client_socket) {
   return 0;
 }
 
-int execute_command(std::vector<char*> &user_string_pointer, int &client_socket) {
+int execute_command(std::vector<char*> &data_pointers, int &client_socket) {
   int count = 0;
   std::cout << "execute_command start(" << count << ")" << '\n';
   int p_pid;
@@ -104,7 +104,7 @@ int execute_command(std::vector<char*> &user_string_pointer, int &client_socket)
   } else if (p_pid == 0) {
     dup2(client_socket, 1);
     int ret;
-    ret = execvp(user_string_pointer[0], (char *const *)&user_string_pointer[0]);
+    ret = execvp(data_pointers[0], (char *const *)&data_pointers[0]);
     if (ret == -1) {
     std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
     close(client_socket);
