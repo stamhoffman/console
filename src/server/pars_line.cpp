@@ -3,20 +3,10 @@
 std::vector<char *> pars_line(std::array<char, 1000> &user_string) {
 
   std::vector<char *> data_pointers;
-
   std::array<char, 1000>::iterator start_itr = user_string.begin();
   std::array<char, 1000>::iterator end_itr = user_string.begin();
 
-  if(*start_itr == '\0') {
-    data_pointers.push_back(start_itr);
-    data_pointers.push_back(start_itr);
-    return data_pointers;
-  }
-
-  if(*start_itr == '\n') {
-    *start_itr = '\0';
-    data_pointers.push_back(start_itr);
-    data_pointers.push_back(start_itr);
+  if(*start_itr == '\0' || *start_itr == '\n') {
     return data_pointers;
   }
 
