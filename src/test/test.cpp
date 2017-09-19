@@ -16,6 +16,7 @@ TEST_CASE("pars_line works properly", "[pars_line]")
   Buff user_input;
   Buff null_str;
   Pointers headers;
+  Pointers user_headers;
   char prog_name[] = "ls";
   char options_0[] = "-l";
   char options_1[] = "-a";
@@ -26,109 +27,66 @@ TEST_CASE("pars_line works properly", "[pars_line]")
     headers = pars_line(user_input);
     REQUIRE(headers.empty());
   }
-/*
+
   SECTION("enter input")
   {
     user_input = Buff{"\n"};
-    pointer = pars_line(user_input);
-    REQUIRE(pointer[0] == user_input.begin());
-    REQUIRE(*pointer[0] == '\0');
+    headers = pars_line(user_input);
+    REQUIRE(headers.empty());
   }
 
   SECTION("command without arguments")
   {
     user_input = Buff{"ls"};
-    pointer = pars_line(user_input);
-    REQUIRE(pointer[0] == user_input.begin());
-    REQUIRE(isgraph(*pointer[0]) != 0);
-    REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
+    headers = pars_line(user_input);
+    REQUIRE(headers[0] == user_input.begin());
   }
 
   SECTION("command with argument")
   {
     user_input = Buff{"ls -l"};
-    pointer = pars_line(user_input);
-    REQUIRE(pointer[0] == user_input.begin());
-    REQUIRE(isgraph(*pointer[0]) != 0);
-    REQUIRE(pointer[1] == user_input.begin() + 3);
-    REQUIRE(isgraph(*pointer[1]) != 0);
-    REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
-    REQUIRE(std::equal(std::begin(options_0), std::end(options_0), pointer[1]));
+    user_headers = {user_input.begin(), user_input.begin() + 3};
+    headers = pars_line(user_input);
+    REQUIRE(headers == user_headers);
   }
 
   SECTION("command with two arguments")
   {
     user_input = Buff{"ls -l -a"};
-    pointer = pars_line(user_input);
-    REQUIRE(pointer[0] == user_input.begin());
-    REQUIRE(isgraph(*pointer[0]) != 0);
-    REQUIRE(pointer[1] == user_input.begin() + 3);
-    REQUIRE(isgraph(*pointer[1]) != 0);
-    REQUIRE(pointer[2] == user_input.begin() + 6);
-    REQUIRE(isgraph(*pointer[2]) != 0);
-    REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
-    REQUIRE(std::equal(std::begin(options_0), std::end(options_0), pointer[1]));
-    REQUIRE(std::equal(std::begin(options_1), std::end(options_1), pointer[2]));
+    user_headers = {user_input.begin(), user_input.begin() + 3, user_input.begin() + 6};
+    headers = pars_line(user_input);
+    REQUIRE(headers == user_headers);
   }
 
-SECTION("command with two argument and two space delimeter")
-{
-  user_input = Buff{"ls  -l  -a"};
-  pointer = pars_line(user_input);
-  REQUIRE(pointer[0] == user_input.begin());
-  REQUIRE(isgraph(*pointer[0]) != 0);
-  REQUIRE(pointer[1] == user_input.begin() + 4);
-  REQUIRE(isgraph(*pointer[1]) != 0);
-  REQUIRE(pointer[2] == user_input.begin() + 8);
-  REQUIRE(isgraph(*pointer[2]) != 0);
-  REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
-  REQUIRE(std::equal(std::begin(options_0), std::end(options_0), pointer[1]));
-  REQUIRE(std::equal(std::begin(options_1), std::end(options_1), pointer[2]));
-}
+  SECTION("command with two argument and two space delimeter")
+  {
+    user_input = Buff{"ls  -l  -a"};
+    user_headers = {user_input.begin(), user_input.begin() + 4, user_input.begin() + 8};
+    headers = pars_line(user_input);
+    REQUIRE(headers == user_headers);
+  }
 
-SECTION("command with two argument and two space delimeter")
-{
-  user_input = Buff{"\tls\t-l\t-a\t"};
-  pointer = pars_line(user_input);
-  REQUIRE(pointer[0] == user_input.begin() + 1);
-  REQUIRE(isgraph(*pointer[0]) != 0);
-  REQUIRE(pointer[1] == user_input.begin() + 4);
-  REQUIRE(isgraph(*pointer[1]) != 0);
-  REQUIRE(pointer[2] == user_input.begin() + 7);
-  REQUIRE(isgraph(*pointer[2]) != 0);
-  REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
-  REQUIRE(std::equal(std::begin(options_0), std::end(options_0), pointer[1]));
-  REQUIRE(std::equal(std::begin(options_1), std::end(options_1), pointer[2]));
-}
+  SECTION("command with two argument and two space delimeter")
+  {
+    user_input = Buff{"\tls\t-l\t-a\t"};
+    user_headers = {user_input.begin() + 1, user_input.begin() + 4, user_input.begin() + 7};
+    headers = pars_line(user_input);
+    REQUIRE(headers == user_headers);
+  }
 
-SECTION("command with two argument and two space delimeter")
-{
-  user_input = Buff{"  ls\t-l  -a\t"};
-  pointer = pars_line(user_input);
-  REQUIRE(pointer[0] == user_input.begin() + 2);
-  REQUIRE(isgraph(*pointer[0]) != 0);
-  REQUIRE(pointer[1] == user_input.begin() + 5);
-  REQUIRE(isgraph(*pointer[1]) != 0);
-  REQUIRE(pointer[2] == user_input.begin() + 9);
-  REQUIRE(isgraph(*pointer[2]) != 0);
-  REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
-  REQUIRE(std::equal(std::begin(options_0), std::end(options_0), pointer[1]));
-  REQUIRE(std::equal(std::begin(options_1), std::end(options_1), pointer[2]));
-}
+  SECTION("command with two argument and two space delimeter")
+  {
+    user_input = Buff{"  ls\t-l  -a\t"};
+    user_headers = {user_input.begin() + 2, user_input.begin() + 5, user_input.begin() + 9};
+    headers = pars_line(user_input);
+    REQUIRE(headers == user_headers);
+  }
 
-SECTION("command with two argument and two space delimeter")
-{
-  user_input = Buff{"  ls\t\t\t-l  -a\t"};
-  pointer = pars_line(user_input);
-  REQUIRE(pointer[0] == user_input.begin() + 2);
-  REQUIRE(isgraph(*pointer[0]) != 0);
-  REQUIRE(pointer[1] == user_input.begin() + 7);
-  REQUIRE(isgraph(*pointer[1]) != 0);
-  REQUIRE(pointer[2] == user_input.begin() + 11);
-  REQUIRE(isgraph(*pointer[2]) != 0);
-  REQUIRE(std::equal(std::begin(prog_name), std::end(prog_name), pointer[0]));
-  REQUIRE(std::equal(std::begin(options_0), std::end(options_0), pointer[1]));
-  REQUIRE(std::equal(std::begin(options_1), std::end(options_1), pointer[2]));
-}
-*/
+  SECTION("command with two argument and two space delimeter")
+  {
+    user_input = Buff{"  ls\t\t\t-l  -a\t"};
+    user_headers = {user_input.begin() + 2, user_input.begin() + 7, user_input.begin() + 11};
+    headers = pars_line(user_input);
+    REQUIRE(headers == user_headers);
+  }
 }
