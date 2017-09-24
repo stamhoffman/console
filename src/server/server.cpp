@@ -1,9 +1,8 @@
-
 #include "config.h"
 
-int execute_command(std::vector<char*> &data_pointers, int &client_socket);
-
+int execute_command(std::vector<char *> &data_pointers, int client_socket);
 int client_task(int client_socket);
+
 int main(int argc, char **argv) {
 #define ps struct sockaddr
 
@@ -60,10 +59,10 @@ int main(int argc, char **argv) {
       exit(1);
     } else if (p_pid == 0) {
       client_task(client_socket);
+    } else {
+      while (wait(&status) != p_pid)
+        ;
     }
-      else{
-        while (wait(& status) != p_pid);
-      }
   }
 
   close(list_socket);
@@ -75,15 +74,14 @@ int client_task(int client_socket) {
   std::cout << "client start(" << count << ")" << '\n';
 
   int read_byte = 0;
-  std::array<char, 1000> user_string = {{'\0'}};
-  std::vector<char *> data_pointers = {nullptr};
+  std::array<char, 1000> user_str;
+  std::vector<char *> data_pointers;
 
   while (1) {
     read_byte = 0;
-    read_byte = read(client_socket, (void *)user_string.data(), user_string.size());
-
+    read_byte = read(client_socket, (void *)user_str.data(), user_str.size());
     if (read_byte > 1) {
-      data_pointers = pars_line(user_string);
+      data_pointers = pars_line(user_str);
       execute_command(data_pointers, client_socket);
     }
   }
@@ -92,7 +90,7 @@ int client_task(int client_socket) {
   return 0;
 }
 
-int execute_command(std::vector<char*> &data_pointers, int &client_socket) {
+int execute_command(std::vector<char *> &data_pointers, int client_socket) {
   int count = 0;
   std::cout << "execute_command start(" << count << ")" << '\n';
   int p_pid;
@@ -106,10 +104,10 @@ int execute_command(std::vector<char*> &data_pointers, int &client_socket) {
     int ret;
     ret = execvp(data_pointers[0], (char *const *)&data_pointers[0]);
     if (ret == -1) {
-    std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
-    close(client_socket);
-    exit(1);
-    return 0;
+      std::cout << "Error execlpv(1)" << strerror(errno) << std::endl;
+      close(client_socket);
+      exit(1);
+      return 0;
     }
   }
 

@@ -9,7 +9,8 @@ set(SERVER_TARGET server)
 set(TEST_TARGET runtest)
 
 set(CLIENT_SOURCES src/client/client.cpp)
-set(SERVER_SOURCES src/server/server.cpp src/server/pars_line.cpp)
+set(SERVER_SOURCES src/server/server.cpp)
+set(PARSLINE_SOURCES src/server/pars_line.cpp)
 
 find_package(Threads REQUIRED)
 
@@ -21,10 +22,10 @@ target_link_libraries(${SERVER_TARGET} ${CMAKE_THREAD_LIBS_INIT})
 set(FILES_TO_FORMAT
   ${CMAKE_CURRENT_SOURCE_DIR}/${CLIENT_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/${SERVER_SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/${PARSLINE_SOURCES}
   )
 set(CLANG_FORMAT_ARGS -i -style=llvm)
 include(clang-format.cmake)
-
 
 set(FILES_TO_CHECK
   ${CMAKE_CURRENT_SOURCE_DIR}/${CLIENT_SOURCES}

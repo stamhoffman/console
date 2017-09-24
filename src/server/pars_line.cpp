@@ -6,13 +6,11 @@ std::vector<char *> pars_line(std::array<char, 1000> &user_string) {
   std::array<char, 1000>::iterator start_itr = user_string.begin();
   std::array<char, 1000>::iterator end_itr = user_string.begin();
 
-  if (*start_itr == '\0' || *start_itr == '\n' || user_string.empty()) {
-    data_pointers.push_back(nullptr);
-    return data_pointers;
-  }
-
-  while (*start_itr != '\0') {
+  while (*start_itr != user_string.end()) {
     while (std::isgraph(*start_itr) == 0) {
+      if (*start_itr == '\0' || *start_itr == '\n') {
+        return data_pointers;
+      }
       start_itr++;
     }
     data_pointers.push_back(start_itr);
