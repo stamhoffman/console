@@ -10,6 +10,9 @@
 #include <unistd.h>
 #include <thread>
 
-#include "pars_line.h"
-
-const int PORT = 54321;
+#include <iostream>
+#include <vector>
+#include <array>
+#include <algorithm>
+#include <iterator>
+#include <numeric>

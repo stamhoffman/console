@@ -1,4 +1,6 @@
+#include "config.h"
 #include "pars_line.h"
+
 
 std::vector<char *> pars_line(std::array<char, 1000> &user_string) {
 
