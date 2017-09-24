@@ -1,4 +1,4 @@
-#include "config.h"
+#include "pars_line.h"
 
 std::vector<char *> pars_line(std::array<char, 1000> &user_string) {
 
@@ -6,7 +6,7 @@ std::vector<char *> pars_line(std::array<char, 1000> &user_string) {
   std::array<char, 1000>::iterator start_itr = user_string.begin();
   std::array<char, 1000>::iterator end_itr = user_string.begin();
 
-  while (*start_itr != user_string.end()) {
+  while (start_itr != user_string.end()) {
     while (std::isgraph(*start_itr) == 0) {
       if (*start_itr == '\0' || *start_itr == '\n') {
         return data_pointers;

@@ -74,18 +74,17 @@ int client_task(int client_socket) {
   std::cout << "client start(" << count << ")" << '\n';
 
   int read_byte = 0;
-  std::array<char, 1000> user_str;
-  std::vector<char *> data_pointers;
 
   while (1) {
     read_byte = 0;
+    std::array<char, 1000> user_str = {{'\0'}};
+    std::vector<char *> data_pointers;
     read_byte = read(client_socket, (void *)user_str.data(), user_str.size());
     if (read_byte > 1) {
       data_pointers = pars_line(user_str);
       execute_command(data_pointers, client_socket);
     }
   }
-
   close(client_socket);
   return 0;
 }

@@ -8,18 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
-#include <array>
-#include <vector>
-
-#include <iostream>
-
 #include <thread>
-
-#include <algorithm>
-#include <iterator>
-#include <numeric>
-
 
 #include "pars_line.h"
 

@@ -14,4 +14,11 @@
 // - read_buff не содержит нулевого символа завершения строки,
 // - read_buff содержит некорректное имя команды.
 
-std::vector<char*> pars_line(std::array<char, 1000> &read_buff);
+#include <iostream>
+#include <vector>
+#include <array>
+#include <algorithm>
+#include <iterator>
+#include <numeric>
+
+std::vector<char*> pars_line(std::array<char, 1000> &user_str);
