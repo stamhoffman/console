@@ -12,7 +12,7 @@ TEST_CASE("pars_line works properly", "[pars_line]") {
   Buff user_input;
   Pointers output;
   Pointers expected_output;
-
+/*
   SECTION("zero input") {
     user_input = Buff{"\0"};
     output = pars_line(user_input);
@@ -26,7 +26,7 @@ TEST_CASE("pars_line works properly", "[pars_line]") {
     REQUIRE(output.size() == 1);
     REQUIRE(output[0] == nullptr);
   }
-
+*/
   SECTION("command without arguments") {
     user_input = Buff{"ls"};
     expected_output = {user_input.begin(), nullptr};

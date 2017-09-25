@@ -15,3 +15,4 @@
 // - read_buff содержит некорректное имя команды.
 
 std::vector<char*> pars_line(std::array<char, 1000> &user_str);
+bool search_begin(char symbol);
