@@ -1,4 +1,3 @@
-#include "config.h"
 #include "pars_line.cpp"
 const int PORT = 54321;
 
