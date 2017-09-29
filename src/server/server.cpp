@@ -1,4 +1,4 @@
-#include "pars_line.cpp"
+#include "parse_line.cpp"
 const int PORT = 54321;
 
 int execute_command(std::vector<char *> &data_pointers, int client_socket);
@@ -82,7 +82,7 @@ int client_task(int client_socket) {
     std::vector<char *> data_pointers;
     read_byte = read(client_socket, (void *)user_str.data(), user_str.size());
     if (read_byte > 1) {
-      data_pointers = pars_line(user_str);
+      data_pointers = parse_line(user_str);
       execute_command(data_pointers, client_socket);
     }
   }
