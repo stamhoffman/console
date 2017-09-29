@@ -42,7 +42,7 @@ std::vector<char *> parse_line(std::array<char, 1000> &user_string) {
 
     start_itr = end_itr;
   }
-  data_pointers.push_back(nullptr);
+  data_pointers.clear();
   return data_pointers;
 }
 
