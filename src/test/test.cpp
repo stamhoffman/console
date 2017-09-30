@@ -13,6 +13,12 @@ TEST_CASE("parse_line works properly", "[parse_line]") {
   Pointers output;
   Pointers expected_output;
 
+  SECTION("no zero input") {
+    user_input = Buff{};
+    output = parse_line(user_input);
+    REQUIRE(output.size() == 0);
+  }
+
   SECTION("zero input") {
     user_input = Buff{"\0"};
     output = parse_line(user_input);
