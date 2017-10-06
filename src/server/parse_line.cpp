@@ -13,32 +13,34 @@ std::vector<char *> parse_line(std::array<char, 1000> &user_string) {
     cur_itr = std::find_if_not(cur_itr, user_string.end(), isblank_wrapper);
     if (cur_itr == user_string.end()) {
       data_pointers.clear();
-      return data_pointers;
+      break;
     }
     if (*cur_itr == '\0' && !data_pointers.empty()) {
       break;
     }
     if (!std::isgraph(*cur_itr)) {
       data_pointers.clear();
-      return data_pointers;
+      break;
     }
     data_pointers.push_back(cur_itr);
     cur_itr = std::find_if_not(cur_itr, user_string.end(), isgraph_wrapper);
     if (cur_itr == user_string.end()) {
       data_pointers.clear();
-      return data_pointers;
+      break;
     }
     if (*cur_itr == '\0') {
       break;
     }
     if (!std::isblank(*cur_itr)) {
       data_pointers.clear();
-      return data_pointers;
+      break;
     }
     *cur_itr = '\0';
     cur_itr++;
   }
-  data_pointers.push_back(nullptr);
+  if (!data_pointers.empty()) {
+    data_pointers.push_back(nullptr);
+  }
   return data_pointers;
 }
 
