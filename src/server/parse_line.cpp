@@ -3,39 +3,42 @@
 
 bool isblank_wrapper(char symbol);
 bool isgraph_wrapper(char symbol);
+void reset_vector(void);
 std::vector<char *> parse_line(std::array<char, 1000> &user_string) {
 
   std::vector<char *> data_pointers;
-  std::array<char, 1000>::iterator start_itr = user_string.begin();
+  std::array<char, 1000>::iterator cur_itr = user_string.begin();
 
-  while (start_itr != user_string.end()) {
-    start_itr = std::find_if_not(start_itr, user_string.end(), isblank_wrapper);
-    if (start_itr == user_string.end()) {
-      break;
-    }
-    if (*start_itr == '\0' && !data_pointers.empty()) {
-      data_pointers.push_back(nullptr);
+  while (cur_itr != user_string.end()) {
+    cur_itr = std::find_if_not(cur_itr, user_string.end(), isblank_wrapper);
+    if (cur_itr == user_string.end()) {
+      data_pointers.clear();
       return data_pointers;
     }
-    if (!std::isgraph(*start_itr)) {
+    if (*cur_itr == '\0' && !data_pointers.empty()) {
       break;
     }
-    data_pointers.push_back(start_itr);
-    start_itr = std::find_if_not(start_itr, user_string.end(), isgraph_wrapper);
-    if (start_itr == user_string.end()) {
-      break;
-    }
-    if (*start_itr == '\0') {
-      data_pointers.push_back(nullptr);
+    if (!std::isgraph(*cur_itr)) {
+      data_pointers.clear();
       return data_pointers;
     }
-    if (!std::isblank(*start_itr)) {
+    data_pointers.push_back(cur_itr);
+    cur_itr = std::find_if_not(cur_itr, user_string.end(), isgraph_wrapper);
+    if (cur_itr == user_string.end()) {
+      data_pointers.clear();
+      return data_pointers;
+    }
+    if (*cur_itr == '\0') {
       break;
     }
-    *start_itr = '\0';
-    start_itr++;
+    if (!std::isblank(*cur_itr)) {
+      data_pointers.clear();
+      return data_pointers;
+    }
+    *cur_itr = '\0';
+    cur_itr++;
   }
-  data_pointers.clear();
+  data_pointers.push_back(nullptr);
   return data_pointers;
 }
 
