@@ -17,4 +17,4 @@
 // В случае ошибки функция возвращает вектор нулевого размера.
 // В случае ошибки буфер находится в неопределенном состоянии и должен игнорироваться.
 
-std::vector<wchar_t*> parse_line(std::array<wchar_t, 1000> &user_str);
+std::vector<char*> parse_line(std::array<char, 1000> &user_str);
