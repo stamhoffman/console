@@ -6,8 +6,8 @@
 
 TEST_CASE("parse_line works properly", "[parse_line]") {
 
-  using Buff = std::array<wchar_t, 1000>;
-  using Pointers = std::vector<wchar_t *>;
+  using Buff = std::array<char, 1000>;
+  using Pointers = std::vector<char *>;
 
   Buff user_input;
   Pointers output;
