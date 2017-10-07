@@ -7,7 +7,7 @@ bool isgraph_wrapper(char symbol);
 std::vector<char *> parse_line(std::array<char, 1000> &user_string) {
 
   std::vector<char *> data_pointers;
-  std::array<char, 1000>::iterator cur_itr = user_string.begin();
+  auto cur_itr = user_string.begin();
 
   while (cur_itr != user_string.end()) {
     cur_itr = std::find_if_not(cur_itr, user_string.end(), isblank_wrapper);
@@ -15,7 +15,7 @@ std::vector<char *> parse_line(std::array<char, 1000> &user_string) {
       data_pointers.clear();
       break;
     }
-    if (*cur_itr == '\0' && !data_pointers.empty()) {
+    if (*cur_itr == '\0') {
       break;
     }
     if (!std::isgraph(*cur_itr)) {
