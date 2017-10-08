@@ -10,7 +10,7 @@ set(TEST_TARGET runtest)
 
 set(CLIENT_SOURCES src/client/client.cpp)
 set(SERVER_SOURCES src/server/server.cpp)
-set(PARSLINE_SOURCES src/server/parse_line.cpp)
+set(PARSLINE_SOURCES src/server/parse_line.h)
 
 find_package(Threads REQUIRED)
 
@@ -38,6 +38,5 @@ add_executable(${TEST_TARGET}
   src/test/test.cpp
   src/test/catch.hpp
   src/server/parse_line.h
-  src/server/parse_line.cpp
   )
 target_include_directories(${TEST_TARGET} PRIVATE src/server)
