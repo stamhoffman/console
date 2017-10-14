@@ -109,6 +109,10 @@ int ftp_connect(int &list_socket, struct sockaddr_in &serv_addr) {
   serv_addr.sin_port = htons(PORT);
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
+  const int on = 1;
+  if (setsockopt(list_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on))) {
+    std::cout << "Error setsockopt():" << strerror(errno) << '\n';
+  }
 
   if ((bind(list_socket, (ps *)&serv_addr, sizeof(serv_addr))) == -1) {
     std::cout << "Error bind():" << strerror(errno) << "\n";
