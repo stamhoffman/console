@@ -24,6 +24,7 @@ set(FILES_TO_FORMAT
   ${CMAKE_CURRENT_SOURCE_DIR}/${SERVER_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/${PARSLINE_SOURCES}
   )
+
 set(CLANG_FORMAT_ARGS -i -style=llvm)
 include(clang-format.cmake)
 
